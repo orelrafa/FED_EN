@@ -1,20 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Title</title>
-  </head>
-  <body>
-    <script src="idb.js"></script>
-    <form>
-      <input type="button" onclick="readItem()" value="reading a single item" />
-      <input type="button" onclick="readAllItems()" value="reading all items" />
-      <input type="button" onclick="addItem()" value="adding an item" />
-      <input type="button" onclick="removeItem()" value="deleting an item" />
-    </form>
-  </body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -23,31 +6,5 @@
   </head>
   <body>
     <script src="idb.js"></script>
-    <script>
-      async function test() {
-        const db = await idb.openCalorisDB("caloriesdb", 1);
-        const result1 = await db.addCalories({
-          calorie: 200,
-          category: "LUNCH",
-          Name: "glass of milk",
-        });
-        const result2 = await db.addCalories({
-          calorie: 300,
-          category: "LUNCH",
-          Description: "pizza slice",
-        });
-        if (db) {
-          console.log("creating db succeeded");
-        }
-        if (result1) {
-          console.log("adding 1st cost succeeded");
-        }
-        if (result2) {
-          console.log("adding 2nd cost succeeded");
-        }
-      }
-      test();
-      //...
-    </script>
   </body>
 </html>
