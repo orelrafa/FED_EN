@@ -22,21 +22,18 @@ The requirements include:
 
     Implmentation: FORM MASRIAH
 
-    Class food:
+    Class food(?):
     Name:
     Category:
     Calories:
     Description:
     Photo(?)
 
-                   get
-                   set
+    - getters and setters
 
 getSumOfCalories(month/year){
 if given month & year then get the month of that year
-
-      if given year then get sum of the year
-
+if given year then get sum of the year
 }
 
 2.  The user can get a detailed report per specific month and year.
