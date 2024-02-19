@@ -1,7 +1,6 @@
 # FED_EN
 
 Calorie Management Client Application - Final Project in Front-End Development
-
 The project will be tested on Google Chrome web browser.
 
 - The data on the client side should be stored in IndexedDB.
