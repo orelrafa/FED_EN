@@ -2,9 +2,45 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Calendar App</title>
   </head>
   <body>
     <script src="idb.js"></script>
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <button id="prevBtn" onclick="prevMonth()">&lt;</button>
+        <h2 id="monthYear">Month Year</h2>
+        <button id="nextBtn" onclick="nextMonth()">&gt;</button>
+      </div>
+      <div class="calendar">
+        <table>
+          <!-- Calendar days will be populated dynamically using JavaScript -->
+        </table>
+      </div>
+    </div>
+    <div class="report-container">
+      <div class="calorie-report">
+        <h2>Monthly Report</h2>
+        <p>Total Calories: <span>0</span></p>
+        <p>Average Daily Calories: <span>0</span></p>
+        <p>Average Weekly Calories: <span>0</span></p>
+        <p>
+          Highest Caloric Consumption In a Day:
+          <span>0</span>
+        </p>
+        <p>Lowest Caloric Consumption In a Day: <span>0</span></p>
+        <p>
+          Most Caloric Dense Item:
+          <span id="totalCalories">Peanut Butter Jelly</span>
+        </p>
+        <p>Least Caloric Dense Item: <span>Bread</span></p>
+        <p>Number of Fasting Days: <span>0</span></p>
+        <p>Highest item count: <span>0</span></p>
+        <p>Lowest item count: <span>0</span></p>
+      </div>
+    </div>
+    <script src="script.js"></script>
   </body>
 </html>
