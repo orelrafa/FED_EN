@@ -54,7 +54,7 @@
               <div class="modal-header">
                 <h5 class="modal-title" id="foodModalLabel">Enter Food Information</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                  <span class="close_icon" aria-hidden="true">×</span>
+                  <span class="close_icon" aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
@@ -88,6 +88,49 @@
           </div>
         </div>
         <!------ End of The Modal After Clicking on "+" To Add Food ------->
+
+        <!------ The Modal for editing food entries ------->
+        <div class="modal" id="foodModalEdit" tabindex="-1" role="dialog" aria-labelledby="foodModalLabelEdit" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="foodModalEditLabel">Edit Food Information</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  <span class="close_icon" aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form id="foodEditForm">
+                  <div class="form-group">
+                    <label for="foodNameEdit">Food Name:</label>
+                    <input type="text" class="form-control" id="foodNameEdit" required>
+                    <div class="errorMsg" id="errorMessageFoodEdit"></div>
+                  </div>
+                  <div class="form-group">
+                    <label for="caloriesEdit">Calories:</label>
+                    <input type="number" class="form-control" id="caloriesEdit" required>
+                    <div class="errorMsg" id="errorMessageCalEdit"></div>
+                  </div>
+                  <div class="form-group">
+                    <label for="categoryEdit">Category:</label>
+                    <select class="form-control" id="categoryEdit">
+                      <option value="breakfast">Breakfast</option>
+                      <option value="lunch">Lunch</option>
+                      <option value="dinner">Dinner</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEditedFood">Save Changes</button>
+                <button type="button" class="btn btn-danger" id="deleteFood">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!------ End of The Modal for editing food entries ------->
 
       </div>
     </div>
