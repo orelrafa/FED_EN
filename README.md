@@ -1,42 +1,52 @@
-# FED_EN
+# FED_EN - Calorie Management Client Application
 
-Calorie Management Client Application - Final Project in Front-End Development
-The project will be tested on Google Chrome web browser.
+## Overview
 
-- The data on the client side should be stored in IndexedDB.
-- The use of IndexedDB should be using a separate library you will develop.
-- This library should be saved in a separate file, and its name should be idb.js.
-- It should include (at the minimum) the functions shown in the code at the end of this document.
-- Most of the functions this library should include must be asynchronous (should return Promise object).
-- Adding the async keyword is not sufficient.
-- Your implementation of these methods should include the instantiation of a Promise object and the return of that object.
+This project serves as the final assignment for the Front-End Development course. It focuses on creating a Calorie Management Client Application to be tested on the Google Chrome web browser.
 
-Application:
-The requirements include:
+## IndexedDB Library
 
-1.  The user can add new calorie consumption items,
-    specifying the number of calories,
-    category
-    (the categories are: BREAKFAST, LUNCH, DINNER, OTHER),
-    and a description (at the minimum).
+- Data on the client side is stored in IndexedDB.
+- A separate library, `idb.js`, is developed for utilizing IndexedDB functionalities.
+- The library includes essential functions (see code at the end).
+- Asynchronous operations are emphasized, requiring proper Promise object instantiation and return.
 
-    Implmentation: FORM
+## Application Features
 
-    Class food(?):
-    Name:
-    Category:
-    Calories:
-    Description:
-    Photo(?)
+### 1. Add Calorie Consumption Items
 
-    - getters and setters
+- Users can add new entries, specifying:
+  - Number of calories
+  - Category (BREAKFAST, LUNCH, DINNER, OTHER)
+  - Description (minimum requirement)
 
-getSumOfCalories(month/year){
-if given month & year then get the month of that year
-if given year then get sum of the year
+### 2. Generate Detailed Monthly Reports
+
+- Users can retrieve detailed reports for a specific month and year.
+
+## User Interface
+
+- Developed using either Bootstrap or ReactJS.
+- Server-side functionalities are excluded from the project scope.
+
+---
+
+## IndexedDB Library Functions
+
+```javascript
+// Include the following functions in idb.js
+
+// Example function
+async function fetchDataFromDB() {
+  return new Promise((resolve, reject) => {
+    // Implementation logic here
+    // Resolve with data or reject with an error
+  });
 }
 
-2.  The user can get a detailed report per specific month and year.
-    User Interface
-    • The user interface should be developed either using Bootstrap or using ReactJS.
-    The project cannot include a server-side.
+// Add other required functions as per project specifications
+```
+
+---
+
+**Note:** Ensure that the project adheres to the specified requirements and maintains a clear separation of concerns between the client application and the IndexedDB library.
