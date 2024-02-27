@@ -49,10 +49,10 @@
                     class="btn-close float-end food-close"
                     data-bs-dismiss="modal"
                     aria-label="Close"
-                    onclick="closeFoodModal()"
+                    onclick="toggleFoodCalendar()"
                   ></button>
                   <h2 class="fw-bold text-center">Calorie Tracker</h2>
-                  <h3 class="text-center mb-4 selected-date text-secondary">
+                  <h3 class="text-center mb-4 text-secondary selected-date">
                     dd/mm/yy
                   </h3>
 
@@ -140,6 +140,7 @@
                             class="close"
                             data-bs-dismiss="modal"
                             aria-label="Close"
+                            onclick="_clearFormFields()"
                           >
                             <span class="close_icon" aria-hidden="true"
                               >&times;</span
@@ -184,6 +185,7 @@
                             type="button"
                             class="btn btn-secondary"
                             data-bs-dismiss="modal"
+                            onclick="_clearFormFields()"
                           >
                             Close
                           </button>
@@ -343,6 +345,7 @@
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
       crossorigin="anonymous"
     ></script>
+    <script src="idb.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

@@ -18,7 +18,8 @@ idb.openCaloriesDB = async (dbName, version) => {
         keyPath: "id",
         autoIncrement: true,
       });
-      store.createIndex("categoryIndex", "category", { unique: false });
+      store.createIndex("calories_category", "category", { unique: false });
+      store.createIndex("month_and_year", ["month", "year"], { unique: false });
     };
 
     request.onsuccess = function () {
@@ -49,7 +50,7 @@ idb.addCalories = async (db, calorieData) => {
     };
   });
 };
-
+/*
 async function testHaim() {
   try {
     const db = await idb.openCaloriesDB("caloriesdb", 1);
@@ -82,3 +83,4 @@ async function testHaim() {
 }
 
 testHaim();
+*/

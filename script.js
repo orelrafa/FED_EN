@@ -1,4 +1,5 @@
 // Set the selected category in the Modal after pressing "+". Example: I clicked "+" on Dinner so the category is set to "dinner".
+
 document
   .getElementById("foodModal")
   .addEventListener("show.bs.modal", function (event) {
@@ -8,7 +9,13 @@ document
   });
 
 //Function to save the entered food information
-function saveFood() {
+async function saveFood() {
+  const selectedDate = document
+    .querySelector(".selected-date")
+    .textContent.split("/");
+  const day = selectedDate[0];
+  const month = selectedDate[1];
+  const year = selectedDate[2];
   const selectedCategory = document.getElementById("category").value;
   const foodName = document.getElementById("foodName").value;
   const calories = document.getElementById("calories").value;
@@ -29,6 +36,38 @@ function saveFood() {
     return;
   }
 
+  //push the new item to the database
+  try {
+    const db = await idb.openCaloriesDB("caloriesdb", 1);
+    idb.addCalories(db, {
+      foodName,
+      calories,
+      selectedCategory,
+      day,
+      month,
+      year,
+    });
+    console.log("item successfully added!");
+  } catch (error) {
+    console.error("Failed to add food item: ", error);
+  }
+
+  _renderFoodListItem(foodName, calories, selectedCategory);
+
+  //close the Modal on successful data entry
+  _closeFoodModal();
+
+  // Clear the form fields for the next entry
+  _clearFormFields();
+}
+
+async function _renderFoodList() {}
+
+function _closeFoodModal() {
+  document.getElementById("foodModal").style.display = "none";
+  document.querySelector(".modal-backdrop").remove();
+}
+function _renderFoodListItem(foodName, calories, selectedCategory) {
   //create new list item with entered information
   const listItem = document.createElement("button");
   listItem.type = "button";
@@ -39,17 +78,15 @@ function saveFood() {
   listItem.setAttribute("data-category", selectedCategory);
   listItem.setAttribute("onClick", "editFood(this)");
 
-  //add the new list item oם the corresponding category in the food list
+  //add the new list item on the corresponding category in the food list
   const foodList = document.getElementById("foodList");
   foodList
     .querySelector(`[data-category="${selectedCategory}"]`)
     .after(listItem);
-
-  //close the Modal
-  document.getElementById("foodModal").style.display = "none";
-  document.querySelector(".modal-backdrop").remove();
-
-  // Clear the form fields for the next entry
+}
+function _clearFormFields() {
+  const errFood = document.getElementById("errorMessageFood");
+  const errCal = document.getElementById("errorMessageCal");
   errFood.textContent = "";
   errCal.textContent = "";
   document.getElementById("foodName").value = "";
@@ -159,24 +196,19 @@ function editFood(clickedButton) {
   }
 }
 
-//-------------------------------------------------------------------------------------------------------------------------------
-
-//Orel part
-// Initial variables
-
-function closeFoodModal() {
+function toggleFoodCalendar() {
   const calendarContainer = document.querySelector(".calendar-container");
   const foodEditMenuContainer = document.querySelector(
     ".food-edit-menu-container"
   );
-  calendarContainer.classList.remove("d-none");
-  foodEditMenuContainer.classList.add("d-none");
+  calendarContainer.classList.toggle("d-none");
+  foodEditMenuContainer.classList.toggle("d-none");
 }
+//-------------------------------------------------------------------------------------------------------------------------------
+
+//Calendar object
 
 const calendar = {};
-calendar.currentDate = new Date();
-calendar.currentMonth = calendar.currentDate.getMonth();
-calendar.currentYear = calendar.currentDate.getFullYear();
 calendar.months = [
   "January",
   "February",
@@ -191,6 +223,9 @@ calendar.months = [
   "November",
   "December",
 ];
+calendar.currentDate = new Date();
+calendar.currentMonth = calendar.currentDate.getMonth();
+calendar.currentYear = calendar.currentDate.getFullYear();
 
 // Function to display the calendar
 calendar.renderCalendar = function () {
@@ -249,12 +284,7 @@ calendar.renderCalendar = function () {
     if (i === lastDay) {
       for (let j = dayOfWeek; j < 6; j++) {
         const emptyCell = row.insertCell();
-        emptyCell.innerHTML = `
-          <div class="cell-content">
-            <div class="day-of-month"></div>
-            <ul class="calorie-list"></ul>
-          </div>
-        `;
+        emptyCell.innerHTML = emptyCellHtml;
       }
     }
 
@@ -266,17 +296,11 @@ calendar.renderCalendar = function () {
     // Add a click event to each day cell
     cell.addEventListener("click", function () {
       const selectedDate = document.querySelector(".selected-date");
-      const calendarContainer = document.querySelector(".calendar-container");
-      const foodEditMenuContainer = document.querySelector(
-        ".food-edit-menu-container"
-      );
 
-      // Toggle visibility using Bootstrap classes
-      calendarContainer.classList.add("d-none");
-      foodEditMenuContainer.classList.remove("d-none");
+      // Toggle to food list
+      toggleFoodCalendar();
 
-      // Additional logic or actions you may want to perform
-      // Updating selected date
+      // will pass selected date on click to food list
       selectedDate.textContent = `${i}/${calendar.currentMonth + 1}/${
         calendar.currentYear
       }`;
