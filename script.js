@@ -163,43 +163,75 @@ function editFood(clickedButton) {
 
 //Orel part
 // Initial variables
-let currentDate = new Date();
-let currentMonth = currentDate.getMonth();
-let currentYear = currentDate.getFullYear();
+
+function closeFoodModal() {
+  const calendarContainer = document.querySelector(".calendar-container");
+  const foodEditMenuContainer = document.querySelector(
+    ".food-edit-menu-container"
+  );
+  calendarContainer.classList.remove("d-none");
+  foodEditMenuContainer.classList.add("d-none");
+}
+
+const calendar = {};
+calendar.currentDate = new Date();
+calendar.currentMonth = calendar.currentDate.getMonth();
+calendar.currentYear = calendar.currentDate.getFullYear();
+calendar.months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 // Function to display the calendar
-function renderCalendar() {
-  const monthYearElement = document.getElementById("monthYear");
+calendar.renderCalendar = function () {
+  const calendarHeaderMonthYear = document.getElementById("monthYear");
   const calendarBody = document.querySelector(".calendar table");
+  const emptyCellHtml = `
+  <div class="cell-content">
+    <div class="day-of-month"></div>
+    <p class="calorie-list"></p>
+  </div>
+`;
+
+  /*By passing 0 as the day in the third parameter, 
+  it sets the date to the last day of the previous month*/
+  const lastDay = new Date(
+    calendar.currentYear,
+    calendar.currentMonth + 1,
+    0
+  ).getDate();
+
+  //Update header month year
+  calendarHeaderMonthYear.textContent = `${
+    calendar.months[calendar.currentMonth]
+  } ${calendar.currentYear}`;
+
+  //Clean body to allow dynamic population
   calendarBody.innerHTML = "";
 
-  // Set the month and year in the header
-  monthYearElement.textContent = new Date(
-    currentYear,
-    currentMonth
-  ).toLocaleString("default", { month: "long", year: "numeric" });
-
-  const lastDay = new Date(currentYear, currentMonth + 1, 0);
-
-  // Loop through each day in the month
-  for (let i = 1; i <= lastDay.getDate(); i++) {
-    const dayDate = new Date(currentYear, currentMonth, i);
+  // Loop through each day in the month, populating the calendar with cells
+  for (let i = 1; i <= lastDay; i++) {
+    const dayDate = new Date(calendar.currentYear, calendar.currentMonth, i);
     const dayOfWeek = dayDate.getDay();
 
-    // Create a new row for each week.
+    // Create a new row if Sunday or first day of the month
     if (dayOfWeek === 0 || i === 1) {
       var row = calendarBody.insertRow();
-
-      // Populate empty cells for the first week
+      // Populate empty cells for the first week of the month
       if (dayOfWeek !== 0 && i === 1) {
-        for (let j = dayOfWeek; j > 0; j--) {
+        for (let j = 0; j < dayOfWeek; j++) {
           const emptyCell = row.insertCell();
-          emptyCell.innerHTML = `
-            <div class="cell-content">
-              <div class="day-of-month"></div>
-              <p class="calorie-list"></p>
-            </div>
-          `;
+          emptyCell.innerHTML = emptyCellHtml;
         }
       }
     }
@@ -214,7 +246,7 @@ function renderCalendar() {
     `;
 
     // Populate empty cells for the last week
-    if (i === lastDay.getDate()) {
+    if (i === lastDay) {
       for (let j = dayOfWeek; j < 6; j++) {
         const emptyCell = row.insertCell();
         emptyCell.innerHTML = `
@@ -227,17 +259,17 @@ function renderCalendar() {
     }
 
     // Highlight the current day
-    if (dayDate.toDateString() === currentDate.toDateString()) {
-      cell.classList.add("table-primary"); // Bootstrap class to highlight the current day
+    if (dayDate.toDateString() === calendar.currentDate.toDateString()) {
+      cell.classList.add("current-day"); // Bootstrap class to highlight the current day
     }
 
     // Add a click event to each day cell
     cell.addEventListener("click", function () {
+      const selectedDate = document.querySelector(".selected-date");
       const calendarContainer = document.querySelector(".calendar-container");
       const foodEditMenuContainer = document.querySelector(
         ".food-edit-menu-container"
       );
-      const selectedDate = document.querySelector(".selected-date");
 
       // Toggle visibility using Bootstrap classes
       calendarContainer.classList.add("d-none");
@@ -245,42 +277,37 @@ function renderCalendar() {
 
       // Additional logic or actions you may want to perform
       // Updating selected date
-      selectedDate.textContent = `${i}/${currentMonth + 1}/${currentYear}`;
-      console.log(`Clicked on ${i}/${currentMonth + 1}/${currentYear}`);
-      console.log(cell.innerHTML);
+      selectedDate.textContent = `${i}/${calendar.currentMonth + 1}/${
+        calendar.currentYear
+      }`;
+      console.log(
+        `Clicked on ${i}/${calendar.currentMonth + 1}/${calendar.currentYear}`
+      );
     });
   }
-}
+};
 
 // Function to go to the previous month
-function prevMonth() {
-  if (currentMonth > 0) {
-    currentMonth--;
+calendar.prevMonth = function () {
+  if (calendar.currentMonth > 0) {
+    calendar.currentMonth--;
   } else {
-    currentMonth = 11;
-    currentYear--;
+    calendar.currentMonth = 11;
+    calendar.currentYear--;
   }
-  renderCalendar();
-}
+  calendar.renderCalendar();
+};
 
 // Function to go to the next month
-function nextMonth() {
-  if (currentMonth < 11) {
-    currentMonth++;
+calendar.nextMonth = function () {
+  if (calendar.currentMonth < 11) {
+    calendar.currentMonth++;
   } else {
-    currentMonth = 0;
-    currentYear++;
+    calendar.currentMonth = 0;
+    calendar.currentYear++;
   }
-  renderCalendar();
-}
-// Initial rendering
-renderCalendar();
+  calendar.renderCalendar();
+};
 
-function closeFoodModal() {
-  const calendarContainer = document.querySelector(".calendar-container");
-  const foodEditMenuContainer = document.querySelector(
-    ".food-edit-menu-container"
-  );
-  calendarContainer.classList.remove("d-none");
-  foodEditMenuContainer.classList.add("d-none");
-}
+// Initial rendering
+calendar.renderCalendar();

@@ -24,9 +24,13 @@
           <div class="col-md-6 mb-5">
             <div class="calendar-container">
               <div class="calendar-header">
-                <button id="prevBtn" onclick="prevMonth()">&lt;</button>
+                <button id="prevBtn" onclick="calendar.prevMonth()">
+                  &lt;
+                </button>
                 <h2 id="monthYear">Month Year</h2>
-                <button id="nextBtn" onclick="nextMonth()">&gt;</button>
+                <button id="nextBtn" onclick="calendar.nextMonth()">
+                  &gt;
+                </button>
               </div>
               <div class="calendar">
                 <table>
@@ -292,7 +296,6 @@
               </div>
             </div>
           </div>
-
           <div class="col-md-6">
             <div class="container">
               <div class="row justify-content-center">
