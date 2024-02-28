@@ -60,37 +60,56 @@ async function saveFood() {
     console.error("Failed to add food item: ", error);
   }
 
-  _renderFoodListItem(foodName, calories, selectedCategory);
+  //render by getting from the db
+
+  //_renderFoodListItem(foodName, calories, selectedCategory);
 
   //close the Modal on successful data entry
   _closeFoodModal();
 
   // Clear the form fields for the next entry
   _clearFormFields();
-}
 
-async function _renderFoodList() {
-  /**
-   * 1) fetch array of food items for that specific day
-   * 2) using for loop render each food item in it's respective category with _renderFoodListItem
-   */
-
-  const db = await idb.openCaloriesDB();
-  const foodList = await idb.getCaloriesByDate(db, date, date);
-  console.log(foodList);
+  _renderFoodListItem(foodName, calories, selectedCategory);
 }
 
 //On closure of food modal clear the items from the categories
 function _closeFoodModal() {
   document.getElementById("foodModal").style.display = "none";
   document.querySelector(".modal-backdrop").remove();
+  console.log("you're here");
 }
+async function _renderFoodList(formattedDate) {
+  /**
+   * 1) fetch array of food items for that specific day
+   * 2) using for loop render each food item in it's respective category with _renderFoodListItem
+   */
+
+  const db = await idb.openCaloriesDB("caloriesdb", 1);
+  console.log(formattedDate);
+  const foodArray = await idb.getCaloriesByDate(
+    db,
+    formattedDate,
+    formattedDate
+  );
+
+  console.log(foodArray);
+  foodArray.forEach((food) => {
+    const { foodName, calories, selectedCategory } = food;
+    _renderFoodListItem(foodName, calories, selectedCategory);
+  });
+}
+
 function _renderFoodListItem(foodName, calories, selectedCategory) {
   //create new list item with entered information
 
   const listItem = document.createElement("button");
   listItem.type = "button";
-  listItem.classList.add("list-group-item", "list-group-item-action");
+  listItem.classList.add(
+    "list-group-item",
+    "list-group-item-action",
+    "rendered-group-item"
+  );
   listItem.innerHTML = `<span>${foodName}</span><span class="badge">${calories} Calories</span>`;
   listItem.setAttribute("data-bs-toggle", "modal");
   listItem.setAttribute("data-bs-target", "#foodModalEdit");
@@ -103,6 +122,7 @@ function _renderFoodListItem(foodName, calories, selectedCategory) {
     .querySelector(`[data-category="${selectedCategory}"]`)
     .after(listItem);
 }
+
 function _clearFormFields() {
   const errFood = document.getElementById("errorMessageFood");
   const errCal = document.getElementById("errorMessageCal");
@@ -112,6 +132,15 @@ function _clearFormFields() {
   document.getElementById("calories").value = "";
 }
 
+function _cleanFoodList() {
+  //get the items that are rendered
+  //remove the items that are rendered
+  renderedFoodItems = document.querySelectorAll(".rendered-group-item");
+  console.log(renderedFoodItems);
+  renderedFoodItems.forEach((item) => {
+    item.remove();
+  });
+}
 //Function to edit or delete food entries
 function editFood(clickedButton) {
   const foodName = clickedButton.querySelector("span").textContent;
@@ -220,8 +249,13 @@ function toggleFoodCalendar() {
   const foodEditMenuContainer = document.querySelector(
     ".food-edit-menu-container"
   );
+  //toggle between the calendar and the food list
   calendarContainer.classList.toggle("d-none");
   foodEditMenuContainer.classList.toggle("d-none");
+  if (foodEditMenuContainer.classList.contains("d-none")) {
+    //clean the previous food list so that a fresh one can be rendered
+    _cleanFoodList();
+  }
 }
 //-------------------------------------------------------------------------------------------------------------------------------
 
@@ -326,6 +360,15 @@ calendar.renderCalendar = function () {
       console.log(
         `Clicked on ${i}/${calendar.currentMonth + 1}/${calendar.currentYear}`
       );
+
+      const formatedSelectedDate = _dateConvert(
+        selectedDate.textContent.split("/")
+      );
+
+      _renderFoodList(formatedSelectedDate);
+
+      //render the foodList
+      //_renderFoodList()
     });
   }
 };

@@ -77,13 +77,11 @@ idb.getCaloriesByDate = async (db, startRange, endRange) => {
   });
 };
 
-/*
-async function test_getCaloriesByDate() {
-  const db = await idb.openCaloriesByDate("caloriesdb", 1);
-  const foodArray = await idb.getCaloriesArray(db, "20240201", "20240229");
+async function test_getCalories() {
+  const db = await idb.openCaloriesDB("caloriesdb", 1);
+  const foodArray = await idb.getCaloriesByDate(db, "20240204", "20240204");
   return foodArray;
 }
-*/
 
 /*
 async function testHaim() {
