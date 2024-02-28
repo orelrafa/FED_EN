@@ -8,14 +8,24 @@ document
     document.getElementById("category").value = category;
   });
 
+function _dateConvert(selectedDate) {
+  const convertedDate = `${selectedDate[2]}${
+    selectedDate[1] < 10
+      ? selectedDate[1].toString().padStart(2, "0")
+      : selectedDate[1].toString()
+  }${
+    selectedDate[0] < 10
+      ? selectedDate[0].toString().padStart(2, "0")
+      : selectedDate[0].toString()
+  }`;
+  return convertedDate;
+}
+
 //Function to save the entered food information
 async function saveFood() {
-  const selectedDate = document
-    .querySelector(".selected-date")
-    .textContent.split("/");
-  const day = selectedDate[0];
-  const month = selectedDate[1];
-  const year = selectedDate[2];
+  const selectedDate = _dateConvert(
+    document.querySelector(".selected-date").textContent.split("/")
+  );
   const selectedCategory = document.getElementById("category").value;
   const foodName = document.getElementById("foodName").value;
   const calories = document.getElementById("calories").value;
@@ -43,9 +53,7 @@ async function saveFood() {
       foodName,
       calories,
       selectedCategory,
-      day,
-      month,
-      year,
+      selectedDate,
     });
     console.log("item successfully added!");
   } catch (error) {
@@ -61,14 +69,25 @@ async function saveFood() {
   _clearFormFields();
 }
 
-async function _renderFoodList() {}
+async function _renderFoodList() {
+  /**
+   * 1) fetch array of food items for that specific day
+   * 2) using for loop render each food item in it's respective category with _renderFoodListItem
+   */
 
+  const db = await idb.openCaloriesDB();
+  const foodList = await idb.getCaloriesByDate(db, date, date);
+  console.log(foodList);
+}
+
+//On closure of food modal clear the items from the categories
 function _closeFoodModal() {
   document.getElementById("foodModal").style.display = "none";
   document.querySelector(".modal-backdrop").remove();
 }
 function _renderFoodListItem(foodName, calories, selectedCategory) {
   //create new list item with entered information
+
   const listItem = document.createElement("button");
   listItem.type = "button";
   listItem.classList.add("list-group-item", "list-group-item-action");

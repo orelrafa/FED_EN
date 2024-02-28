@@ -18,8 +18,12 @@ idb.openCaloriesDB = async (dbName, version) => {
         keyPath: "id",
         autoIncrement: true,
       });
-      store.createIndex("calories_category", "category", { unique: false });
-      store.createIndex("month_and_year", ["month", "year"], { unique: false });
+      store.createIndex("calories_category", "selectedCategory", {
+        unique: false,
+      });
+      store.createIndex("calories_date", "selectedDate", {
+        unique: false,
+      });
     };
 
     request.onsuccess = function () {
@@ -50,6 +54,37 @@ idb.addCalories = async (db, calorieData) => {
     };
   });
 };
+
+idb.getCaloriesByDate = async (db, startRange, endRange) => {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction("calories", "readonly");
+    const store = transaction.objectStore("calories");
+    const index = store.index("calories_date");
+    const range = IDBKeyRange.bound(startRange, endRange, false, false);
+    let foodArrayRequest = index.getAll(range);
+
+    foodArrayRequest.onerror = function (event) {
+      console.error("Error getting calories:");
+      console.error(event);
+      reject(event);
+    };
+    foodArrayRequest.onsuccess = function () {
+      resolve(foodArrayRequest.result);
+    };
+    transaction.oncomplete = function () {
+      db.close();
+    };
+  });
+};
+
+/*
+async function test_getCaloriesByDate() {
+  const db = await idb.openCaloriesByDate("caloriesdb", 1);
+  const foodArray = await idb.getCaloriesArray(db, "20240201", "20240229");
+  return foodArray;
+}
+*/
+
 /*
 async function testHaim() {
   try {
