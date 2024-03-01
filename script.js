@@ -60,16 +60,13 @@ async function saveFood() {
     console.error("Failed to add food item: ", error);
   }
 
-  //render by getting from the db
-
-  //_renderFoodListItem(foodName, calories, selectedCategory);
-
   //close the Modal on successful data entry
   _closeFoodModal();
 
   // Clear the form fields for the next entry
   _clearFormFields();
 
+  //render by getting from the db
   _renderFoodListItem(foodName, calories, selectedCategory);
 }
 
