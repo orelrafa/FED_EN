@@ -49,25 +49,28 @@ async function saveFood() {
   //push the new item to the database
   try {
     const db = await idb.openCaloriesDB("caloriesdb", 1);
-    idb.addCalories(db, {
+    const id = await idb.addCalories(db, {
+      // added const id = await..... to save the id of a food item
       foodName,
       calories,
       selectedCategory,
       selectedDate,
     });
-    console.log("item successfully added!");
+    console.log("item successfully added! id: ", id);
+    _renderFoodListItem(foodName, calories, selectedCategory, id); //moved this line from bottom to here and added id
   } catch (error) {
     console.error("Failed to add food item: ", error);
   }
+
+  //render by getting from the db
+
+  //_renderFoodListItem(foodName, calories, selectedCategory);
 
   //close the Modal on successful data entry
   _closeFoodModal();
 
   // Clear the form fields for the next entry
   _clearFormFields();
-
-  //render by getting from the db
-  _renderFoodListItem(foodName, calories, selectedCategory);
 }
 
 //On closure of food modal clear the items from the categories
@@ -92,12 +95,13 @@ async function _renderFoodList(formattedDate) {
 
   console.log(foodArray);
   foodArray.forEach((food) => {
-    const { foodName, calories, selectedCategory } = food;
-    _renderFoodListItem(foodName, calories, selectedCategory);
+    const { foodName, calories, selectedCategory, id } = food; // added id
+    _renderFoodListItem(foodName, calories, selectedCategory, id); // added id
   });
 }
 
-function _renderFoodListItem(foodName, calories, selectedCategory) {
+function _renderFoodListItem(foodName, calories, selectedCategory, id) {
+  // added id
   //create new list item with entered information
 
   const listItem = document.createElement("button");
@@ -108,9 +112,8 @@ function _renderFoodListItem(foodName, calories, selectedCategory) {
     "rendered-group-item"
   );
   listItem.innerHTML = `<span>${foodName}</span><span class="badge">${calories} Calories</span>`;
-  listItem.setAttribute("data-bs-toggle", "modal");
-  listItem.setAttribute("data-bs-target", "#foodModalEdit");
   listItem.setAttribute("data-category", selectedCategory);
+  listItem.setAttribute("data-id", id); //add the id to the food button
   listItem.setAttribute("onClick", "editFood(this)");
 
   //add the new list item on the corresponding category in the food list
@@ -140,6 +143,8 @@ function _cleanFoodList() {
 }
 //Function to edit or delete food entries
 function editFood(clickedButton) {
+  console.log(clickedButton);
+
   const foodName = clickedButton.querySelector("span").textContent;
   const calories = clickedButton
     .querySelector(".badge")
@@ -209,8 +214,21 @@ function editFood(clickedButton) {
   };
 
   // Delete the food item when the "Delete" button is clicked
-  document.getElementById("deleteFood").onclick = function () {
-    // Remove the food item from the list
+  document.getElementById("deleteFood").onclick = async function () {
+    //Delete from indexedDB
+    const id = clickedButton.getAttribute("data-id"); // get id of clicked food item
+    console.log("The id: ", id);
+
+    try {
+      console.log("entered try");
+      const db = await idb.openCaloriesDB("caloriesdb", 1);
+      await idb.deleteCalories(db, id);
+      console.log(`item with id ${id} deleted!`);
+    } catch (error) {
+      console.error("Filed to delete food item: ", error);
+    }
+
+    // Remove the food item from the UI list
     clickedButton.remove();
 
     // Close the modal
@@ -288,7 +306,7 @@ calendar.renderCalendar = function () {
   </div>
 `;
 
-  /*By passing 0 as the day in the third parameter, 
+  /*By passing 0 as the day in the third parameter,
   it sets the date to the last day of the previous month*/
   const lastDay = new Date(
     calendar.currentYear,

@@ -46,7 +46,7 @@ idb.addCalories = async (db, calorieData) => {
     };
 
     request.onsuccess = function () {
-      resolve(true);
+      resolve(request.result); //Changed from true to request.result
     };
 
     transaction.oncomplete = function () {
@@ -77,13 +77,40 @@ idb.getCaloriesByDate = async (db, startRange, endRange) => {
   });
 };
 
-/*
+//Delete food item from IndexedDB
+idb.deleteCalories = async (db, id) => {
+  return new Promise((resolve, reject) => {
+    console.log(db);
+    const transaction = db.transaction("calories", "readwrite");
+    const store = transaction.objectStore("calories");
+    console.log(store);
+    const request = store.delete(+id); //"+" is needed because without it the id is a string ant not int!!!!!
+    console.log("we in the delete from index function with id: ", id);
+
+    request.onerror = function (event) {
+      console.error(`Error deleting calories with id ${id}:`);
+      console.error(event);
+      reject(event);
+    };
+
+    request.onsuccess = function () {
+      resolve(true);
+    };
+
+    transaction.oncomplete = function () {
+      db.close();
+    };
+  });
+};
+
 async function test_getCalories() {
   const db = await idb.openCaloriesDB("caloriesdb", 1);
   const foodArray = await idb.getCaloriesByDate(db, "20240204", "20240204");
   return foodArray;
 }
-*/
+
+//Q: Do the things it the test supposed to be shown in the UI?
+
 /*
 async function testHaim() {
   try {
