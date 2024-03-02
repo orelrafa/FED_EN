@@ -37,124 +37,22 @@ async function saveFood() {
   // Clear the form fields for the next entry
   clearSaveFoodFields();
 }
+//DONE REFACTORING (MIGHT NEED TO COMBINE WITH EDIT)
+function clearSaveFoodFields() {
+  const errFood = document.getElementById("errorMessageFood");
+  const errCal = document.getElementById("errorMessageCal");
+  errFood.textContent = "";
+  errCal.textContent = "";
+  document.getElementById("foodName").value = "";
+  document.getElementById("calories").value = "";
+}
 
-//Function to edit or delete food entries
-function editFood(clickedButton) {
-  const foodName = clickedButton.querySelector("span").textContent;
-  const calories = clickedButton
-    .querySelector(".badge")
-    .textContent.split(" ")[0]; // extract the calorie number without the word "calories"
-  const category = clickedButton.getAttribute("data-category");
-  const errFood = document.getElementById("errorMessageFoodEdit");
-  const errCal = document.getElementById("errorMessageCalEdit");
-
-  // Set the values in the modal for editing
+//DONE REFACTORING
+function setEditModalValues(foodName, calories, category) {
+  // Function that sets the values in the modal for editing
   document.getElementById("foodNameEdit").value = foodName;
   document.getElementById("caloriesEdit").value = calories;
   document.getElementById("categoryEdit").value = category;
-
-  // Show the modal
-  const modal = new bootstrap.Modal(document.getElementById("foodModalEdit"));
-  modal.show();
-  //console.log(modal);
-
-  // Save the edited information when the "Save Changes" button is clicked
-  document.getElementById("saveEditedFood").onclick = function () {
-    //check if food and calories fields are not empty
-    if (
-      !document.getElementById("foodNameEdit").value &&
-      !document.getElementById("caloriesEdit").value
-    ) {
-      errFood.textContent = "Enter food name!";
-      errCal.textContent = "Enter calories!";
-      return;
-    }
-    if (!document.getElementById("foodNameEdit").value) {
-      errFood.textContent = "Enter food name!";
-      return;
-    }
-    if (!document.getElementById("caloriesEdit").value) {
-      errCal.textContent = "Enter calories!";
-      return;
-    }
-
-    // Update the food item in the list
-    clickedButton.querySelector("span").textContent =
-      document.getElementById("foodNameEdit").value;
-    clickedButton.querySelector(".badge").textContent = `${
-      document.getElementById("caloriesEdit").value
-    } Calories`;
-    //if category changed then move the food item to the correct category
-    if (category !== document.getElementById("categoryEdit").value) {
-      const foodList = document.getElementById("foodList");
-      foodList
-        .querySelector(
-          `[data-category="${document.getElementById("categoryEdit").value}"]`
-        )
-        .after(clickedButton);
-    }
-    clickedButton.setAttribute(
-      "data-category",
-      document.getElementById("categoryEdit").value
-    );
-    //console.log(
-    //  "new category: " + document.getElementById("categoryEdit").value
-    //);
-
-    // Close the modal
-    errFood.textContent = "";
-    errCal.textContent = "";
-    modal.hide();
-    document.body.classList.remove("modal-open");
-    deleteBackdrop();
-  };
-
-  // Delete the food item when the "Delete" button is clicked
-  document.getElementById("deleteFood").onclick = async function () {
-    //Delete from indexedDB
-    const id = clickedButton.getAttribute("data-id"); // get id of clicked food item
-    try {
-      const db = await idb.openCaloriesDB("caloriesdb", 1);
-      await idb.deleteCalories(db, id);
-    } catch (error) {
-      console.error("Filed to delete food item: ", error);
-    }
-
-    // Remove the food item from the UI list
-    clickedButton.remove();
-
-    // Close the modal
-    errFood.textContent = "";
-    errCal.textContent = "";
-    modal.hide();
-    document.body.classList.remove("modal-open");
-    deleteBackdrop();
-  };
-
-  // Close the modal and remove the backdrop when the modal is hidden
-  errFood.textContent = "";
-  errCal.textContent = "";
-  document
-    .getElementById("foodModalEdit")
-    .addEventListener("hidden.bs.modal", function () {
-      document.body.classList.remove("modal-open");
-      deleteBackdrop();
-    });
-
-  //function to remove the backdrop when the modal closes.
-  function deleteBackdrop() {
-    const backdrop = document.querySelector(".modal-backdrop");
-    if (backdrop) {
-      backdrop.remove();
-    }
-    document.body.classList.remove("modal-open");
-  }
-}
-
-//DONE REFACTORING - MIGHT NEED TO RENAME foodModal
-function closeFoodModal() {
-  document.getElementById("foodModal").style.display = "none";
-  document.querySelector(".modal-backdrop").remove();
 }
 
 //DONE REFACTORING
@@ -177,6 +75,143 @@ function validateSaveFields(foodName, calories) {
     return false;
   }
   return true;
+}
+
+function validateEditFoodFields() {
+  //Does not receive parameters because it fetches
+  //The updated ones
+  const errFood = document.getElementById("errorMessageFoodEdit");
+  const errCal = document.getElementById("errorMessageCalEdit");
+  errFood.textContent = "";
+  errCal.textContent = "";
+  if (
+    !document.getElementById("foodNameEdit").value &&
+    !document.getElementById("caloriesEdit").value
+  ) {
+    errFood.textContent = "Enter food name!";
+    errCal.textContent = "Enter calories!";
+    return false;
+  }
+  if (!document.getElementById("foodNameEdit").value) {
+    errFood.textContent = "Enter food name!";
+    return false;
+  }
+  if (!document.getElementById("caloriesEdit").value) {
+    errCal.textContent = "Enter calories!";
+    return false;
+  }
+  return true;
+}
+
+//Function to edit or delete food entries
+function editFood(clickedButton) {
+  const foodName = clickedButton.querySelector("span").textContent;
+  const calories = clickedButton
+    .querySelector(".badge")
+    .textContent.split(" ")[0];
+  const category = clickedButton.getAttribute("data-category");
+
+  // Set the values in the modal for editing
+  setEditModalValues(foodName, calories, category);
+
+  // Show the modal
+  const foodEditModal = new bootstrap.Modal(
+    document.getElementById("foodModalEdit")
+  );
+  foodEditModal.show();
+
+  /*
+  This code adds an event listener to the "hidden.bs.modal" event of the element with the ID "foodModalEdit". The event is triggered when the Bootstrap modal with the ID "foodModalEdit" is fully hidden or closed. When this event occurs, the provided callback function is executed.
+  */
+  // removes the "modal-open" class from the <body>
+  // element. Bootstrap adds this class to the body when
+  // a modal is open, providing a style to prevent
+  // scrolling on the background content while the
+  // modal is open. Removing it restores the normal
+  // scrolling behavior.
+  // document
+  //   .getElementById("foodModalEdit")
+  //   .addEventListener("hidden.bs.modal", function () {
+  //     document.body.classList.remove("modal-open");
+  //   });
+
+  // Save the edited information when the "Save Changes" button is clicked
+
+  document.getElementById("saveEditedFood").onclick = function () {
+    //check if food and calories fields are not empty
+    if (!validateEditFoodFields()) {
+      return;
+    }
+
+    // Update the food item in the list
+    clickedButton.querySelector("span").textContent =
+      document.getElementById("foodNameEdit").value;
+    clickedButton.querySelector(".badge").textContent = `${
+      document.getElementById("caloriesEdit").value
+    } Calories`;
+    //if category changed then move the food item to the correct category
+    if (category !== document.getElementById("categoryEdit").value) {
+      const foodList = document.getElementById("foodList");
+      foodList
+        .querySelector(
+          `[data-category="${document.getElementById("categoryEdit").value}"]`
+        )
+        .after(clickedButton);
+    }
+    clickedButton.setAttribute(
+      "data-category",
+      document.getElementById("categoryEdit").value
+    );
+
+    // Close the modal and clean up
+    cleanErrorMessages();
+    foodEditModal.hide();
+    document.body.classList.remove("modal-open");
+    deleteBackdrop();
+  };
+
+  // Delete the food item when the "Delete" button is clicked
+  document.getElementById("deleteFood").onclick = async function () {
+    //Delete from indexedDB
+    const id = clickedButton.getAttribute("data-id");
+    try {
+      const db = await idb.openCaloriesDB("caloriesdb", 1);
+      await idb.deleteCalories(db, id);
+    } catch (error) {
+      console.error("Filed to delete food item: ", error);
+    }
+
+    // Remove the food item from the UI list
+    clickedButton.remove();
+
+    // Close the modal
+    cleanErrorMessages();
+    foodEditModal.hide();
+    document.body.classList.remove("modal-open");
+    deleteBackdrop();
+  };
+
+  cleanErrorMessages();
+}
+
+function cleanErrorMessages() {
+  const errFood = document.getElementById("errorMessageFoodEdit");
+  const errCal = document.getElementById("errorMessageCalEdit");
+  errFood.textContent = "";
+  errCal.textContent = "";
+}
+//DONE REFACTORING
+function deleteBackdrop() {
+  const backdrop = document.querySelector(".modal-backdrop");
+  if (backdrop) {
+    backdrop.remove();
+  }
+  document.body.classList.remove("modal-open");
+}
+//DONE REFACTORING - MIGHT NEED TO RENAME foodModal
+function closeFoodModal() {
+  document.getElementById("foodModal").style.display = "none";
+  document.querySelector(".modal-backdrop").remove();
 }
 
 //DONE REFACTORING
@@ -209,6 +244,7 @@ function renderFoodListItem(foodName, calories, selectedCategory, id) {
   listItem.innerHTML = `<span>${foodName}</span><span class="badge">${calories} Calories</span>`;
   listItem.setAttribute("data-category", selectedCategory);
   listItem.setAttribute("data-id", id);
+  //adds ability to edit food on click on item
   listItem.setAttribute("onClick", "editFood(this)");
 
   //render the new list item on the corresponding category in the food list
@@ -216,16 +252,6 @@ function renderFoodListItem(foodName, calories, selectedCategory, id) {
   foodList
     .querySelector(`[data-category="${selectedCategory}"]`)
     .after(listItem);
-}
-
-//DONE REFACTORING (MIGHT NEED TO COMBINE WITH EDIT)
-function clearSaveFoodFields() {
-  const errFood = document.getElementById("errorMessageFood");
-  const errCal = document.getElementById("errorMessageCal");
-  errFood.textContent = "";
-  errCal.textContent = "";
-  document.getElementById("foodName").value = "";
-  document.getElementById("calories").value = "";
 }
 
 //DONE REFACTORING
