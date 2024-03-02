@@ -1,150 +1,45 @@
-// Set the selected category in the Modal after pressing "+". Example: I clicked "+" on Dinner so the category is set to "dinner".
-
-document
-  .getElementById("foodModal")
-  .addEventListener("show.bs.modal", function (event) {
-    const button = event.relatedTarget;
-    const category = button.getAttribute("data-category");
-    document.getElementById("category").value = category;
-  });
-
-function _dateConvert(selectedDate) {
-  const convertedDate = `${selectedDate[2]}${
-    selectedDate[1] < 10
-      ? selectedDate[1].toString().padStart(2, "0")
-      : selectedDate[1].toString()
-  }${
-    selectedDate[0] < 10
-      ? selectedDate[0].toString().padStart(2, "0")
-      : selectedDate[0].toString()
-  }`;
-  return convertedDate;
-}
-
-//Function to save the entered food information
+//DONE REFACTORING
 async function saveFood() {
-  const selectedDate = _dateConvert(
+  //Function to save the entered food information
+
+  //Declaring Variables
+  const selectedDate = dateConvert(
     document.querySelector(".selected-date").textContent.split("/")
   );
   const selectedCategory = document.getElementById("category").value;
   const foodName = document.getElementById("foodName").value;
   const calories = document.getElementById("calories").value;
-  const errFood = document.getElementById("errorMessageFood");
-  const errCal = document.getElementById("errorMessageCal");
 
-  if (!foodName && !calories) {
-    errFood.textContent = "Enter food name!";
-    errCal.textContent = "Enter calories!";
-    return;
-  }
-  if (!foodName) {
-    errFood.textContent = "Enter food name!";
-    return;
-  }
-  if (!calories) {
-    errCal.textContent = "Enter calories!";
+  // Check if the entered values in the fields are valid
+  if (!validateSaveFields(foodName, calories)) {
     return;
   }
 
-  //push the new item to the database
+  // Push the new item to the database
   try {
     const db = await idb.openCaloriesDB("caloriesdb", 1);
     const id = await idb.addCalories(db, {
-      // added const id = await..... to save the id of a food item
       foodName,
       calories,
       selectedCategory,
       selectedDate,
     });
-    console.log("item successfully added! id: ", id);
-    _renderFoodListItem(foodName, calories, selectedCategory, id); //moved this line from bottom to here and added id
+
+    // Render the new item with the id attached to the html
+    renderFoodListItem(foodName, calories, selectedCategory, id);
   } catch (error) {
     console.error("Failed to add food item: ", error);
   }
 
-  //render by getting from the db
-
-  //_renderFoodListItem(foodName, calories, selectedCategory);
-
-  //close the Modal on successful data entry
-  _closeFoodModal();
+  // Close the Modal on successful data entry
+  closeFoodModal();
 
   // Clear the form fields for the next entry
-  _clearFormFields();
+  clearSaveFoodFields();
 }
 
-//On closure of food modal clear the items from the categories
-function _closeFoodModal() {
-  document.getElementById("foodModal").style.display = "none";
-  document.querySelector(".modal-backdrop").remove();
-  console.log("you're here");
-}
-async function _renderFoodList(formattedDate) {
-  /**
-   * 1) fetch array of food items for that specific day
-   * 2) using for loop render each food item in it's respective category with _renderFoodListItem
-   */
-
-  const db = await idb.openCaloriesDB("caloriesdb", 1);
-  console.log(formattedDate);
-  const foodArray = await idb.getCaloriesByDate(
-    db,
-    formattedDate,
-    formattedDate
-  );
-
-  console.log(foodArray);
-  foodArray.forEach((food) => {
-    const { foodName, calories, selectedCategory, id } = food; // added id
-    _renderFoodListItem(foodName, calories, selectedCategory, id); // added id
-  });
-}
-
-function _renderFoodListItem(foodName, calories, selectedCategory, id) {
-  // added id
-  //create new list item with entered information
-
-  const listItem = document.createElement("button");
-  listItem.type = "button";
-  listItem.classList.add(
-    "list-group-item",
-    "list-group-item-action",
-    "rendered-group-item"
-  );
-  listItem.innerHTML = `<span>${foodName}</span><span class="badge">${calories} Calories</span>`;
-  listItem.setAttribute("data-category", selectedCategory);
-  listItem.setAttribute("data-id", id); //add the id to the food button
-  listItem.setAttribute("onClick", "editFood(this)");
-
-  //add the new list item on the corresponding category in the food list
-  const foodList = document.getElementById("foodList");
-  foodList
-    .querySelector(`[data-category="${selectedCategory}"]`)
-    .after(listItem);
-}
-
-function _clearFormFields() {
-  const errFood = document.getElementById("errorMessageFood");
-  const errCal = document.getElementById("errorMessageCal");
-  errFood.textContent = "";
-  errCal.textContent = "";
-  document.getElementById("foodName").value = "";
-  document.getElementById("calories").value = "";
-}
-
-function _cleanFoodList() {
-  //get the items that are rendered
-  //remove the items that are rendered
-  renderedFoodItems = document.querySelectorAll(".rendered-group-item");
-  console.log(renderedFoodItems);
-  renderedFoodItems.forEach((item) => {
-    item.remove();
-  });
-}
 //Function to edit or delete food entries
 function editFood(clickedButton) {
-  console.log(clickedButton);
-
   const foodName = clickedButton.querySelector("span").textContent;
   const calories = clickedButton
     .querySelector(".badge")
@@ -161,6 +56,7 @@ function editFood(clickedButton) {
   // Show the modal
   const modal = new bootstrap.Modal(document.getElementById("foodModalEdit"));
   modal.show();
+  //console.log(modal);
 
   // Save the edited information when the "Save Changes" button is clicked
   document.getElementById("saveEditedFood").onclick = function () {
@@ -201,9 +97,9 @@ function editFood(clickedButton) {
       "data-category",
       document.getElementById("categoryEdit").value
     );
-    console.log(
-      "new category: " + document.getElementById("categoryEdit").value
-    );
+    //console.log(
+    //  "new category: " + document.getElementById("categoryEdit").value
+    //);
 
     // Close the modal
     errFood.textContent = "";
@@ -217,13 +113,9 @@ function editFood(clickedButton) {
   document.getElementById("deleteFood").onclick = async function () {
     //Delete from indexedDB
     const id = clickedButton.getAttribute("data-id"); // get id of clicked food item
-    console.log("The id: ", id);
-
     try {
-      console.log("entered try");
       const db = await idb.openCaloriesDB("caloriesdb", 1);
       await idb.deleteCalories(db, id);
-      console.log(`item with id ${id} deleted!`);
     } catch (error) {
       console.error("Filed to delete food item: ", error);
     }
@@ -259,6 +151,108 @@ function editFood(clickedButton) {
   }
 }
 
+//DONE REFACTORING - MIGHT NEED TO RENAME foodModal
+function closeFoodModal() {
+  document.getElementById("foodModal").style.display = "none";
+  document.querySelector(".modal-backdrop").remove();
+}
+
+//DONE REFACTORING
+function validateSaveFields(foodName, calories) {
+  const errFood = document.getElementById("errorMessageFood");
+  const errCal = document.getElementById("errorMessageCal");
+  errFood.textContent = "";
+  errCal.textContent = "";
+  if (!foodName && !calories) {
+    errFood.textContent = "Enter food name!";
+    errCal.textContent = "Enter calories!";
+    return false;
+  }
+  if (!foodName) {
+    errFood.textContent = "Enter food name!";
+    return false;
+  }
+  if (!calories) {
+    errCal.textContent = "Enter calories!";
+    return false;
+  }
+  return true;
+}
+
+//DONE REFACTORING
+async function renderFoodList(formattedDate) {
+  // Fetch array of food items for that specific day
+  const db = await idb.openCaloriesDB("caloriesdb", 1);
+  const foodArray = await idb.getCaloriesByDate(
+    db,
+    formattedDate,
+    formattedDate
+  );
+
+  // Render each food item in it's respective category
+  foodArray.forEach((food) => {
+    const { foodName, calories, selectedCategory, id } = food; // added id
+    renderFoodListItem(foodName, calories, selectedCategory, id); // added id
+  });
+}
+
+//DONE REFACTORING
+function renderFoodListItem(foodName, calories, selectedCategory, id) {
+  //create new list item with entered information
+  const listItem = document.createElement("button");
+  listItem.type = "button";
+  listItem.classList.add(
+    "list-group-item",
+    "list-group-item-action",
+    "rendered-group-item"
+  );
+  listItem.innerHTML = `<span>${foodName}</span><span class="badge">${calories} Calories</span>`;
+  listItem.setAttribute("data-category", selectedCategory);
+  listItem.setAttribute("data-id", id);
+  listItem.setAttribute("onClick", "editFood(this)");
+
+  //render the new list item on the corresponding category in the food list
+  const foodList = document.getElementById("foodList");
+  foodList
+    .querySelector(`[data-category="${selectedCategory}"]`)
+    .after(listItem);
+}
+
+//DONE REFACTORING (MIGHT NEED TO COMBINE WITH EDIT)
+function clearSaveFoodFields() {
+  const errFood = document.getElementById("errorMessageFood");
+  const errCal = document.getElementById("errorMessageCal");
+  errFood.textContent = "";
+  errCal.textContent = "";
+  document.getElementById("foodName").value = "";
+  document.getElementById("calories").value = "";
+}
+
+//DONE REFACTORING
+function clearFoodList() {
+  //get the items that are rendered
+  renderedFoodItems = document.querySelectorAll(".rendered-group-item");
+  //remove the items that are rendered
+  renderedFoodItems.forEach((item) => {
+    item.remove();
+  });
+}
+
+//DONE REFACTORING
+function dateConvert(selectedDate) {
+  const convertedDate = `${selectedDate[2]}${
+    selectedDate[1] < 10
+      ? selectedDate[1].toString().padStart(2, "0")
+      : selectedDate[1].toString()
+  }${
+    selectedDate[0] < 10
+      ? selectedDate[0].toString().padStart(2, "0")
+      : selectedDate[0].toString()
+  }`;
+  return convertedDate;
+}
+
+//DONE REFACTORING
 function toggleFoodCalendar() {
   const calendarContainer = document.querySelector(".calendar-container");
   const foodEditMenuContainer = document.querySelector(
@@ -269,8 +263,20 @@ function toggleFoodCalendar() {
   foodEditMenuContainer.classList.toggle("d-none");
   if (foodEditMenuContainer.classList.contains("d-none")) {
     //clean the previous food list so that a fresh one can be rendered
-    _cleanFoodList();
+    clearFoodList();
   }
+}
+
+//DONE REFACTORING
+function setSelectedCategoryInModal() {
+  // Set the selected category in the Modal after pressing "+". Example: I clicked "+" on Dinner so the category is set to "dinner".
+  document
+    .getElementById("foodModal")
+    .addEventListener("show.bs.modal", function (event) {
+      const button = event.relatedTarget;
+      const category = button.getAttribute("data-category");
+      document.getElementById("category").value = category;
+    });
 }
 //-------------------------------------------------------------------------------------------------------------------------------
 
@@ -372,15 +378,15 @@ calendar.renderCalendar = function () {
       selectedDate.textContent = `${i}/${calendar.currentMonth + 1}/${
         calendar.currentYear
       }`;
-      console.log(
-        `Clicked on ${i}/${calendar.currentMonth + 1}/${calendar.currentYear}`
-      );
+      //console.log(
+      //  `Clicked on ${i}/${calendar.currentMonth + 1}/${calendar.currentYear}`
+      //);
 
-      const formatedSelectedDate = _dateConvert(
+      const formatedSelectedDate = dateConvert(
         selectedDate.textContent.split("/")
       );
 
-      _renderFoodList(formatedSelectedDate);
+      renderFoodList(formatedSelectedDate);
 
       //render the foodList
       //_renderFoodList()
@@ -412,3 +418,5 @@ calendar.nextMonth = function () {
 
 // Initial rendering
 calendar.renderCalendar();
+
+setSelectedCategoryInModal();
