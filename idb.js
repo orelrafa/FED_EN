@@ -80,12 +80,13 @@ idb.getCaloriesByDate = async (db, startRange, endRange) => {
 //Delete food item from IndexedDB
 idb.deleteCalories = async (db, id) => {
   return new Promise((resolve, reject) => {
-    console.log(db);
+    //console.log(db);
     const transaction = db.transaction("calories", "readwrite");
     const store = transaction.objectStore("calories");
-    console.log(store);
-    const request = store.delete(+id); //"+" is needed because without it the id is a string ant not int!!!!!
-    console.log("we in the delete from index function with id: ", id);
+    //console.log(store);
+    //"+" is needed because without it the id is a string ant not int
+    const request = store.delete(+id);
+    //console.log("we in the delete from index function with id: ", id);
 
     request.onerror = function (event) {
       console.error(`Error deleting calories with id ${id}:`);
@@ -103,6 +104,50 @@ idb.deleteCalories = async (db, id) => {
   });
 };
 
+idb.updateFunction = function (existingCalories) {
+  const newFoodName = document.getElementById("foodNameEdit").value;
+  const newCalories = document.getElementById("caloriesEdit").value;
+  const newCategory = document.getElementById("categoryEdit").value;
+  existingCalories.foodName = newFoodName;
+  existingCalories.calories = newCalories;
+  existingCalories.selectedCategory = newCategory;
+  return existingCalories;
+};
+
+idb.updateCalories = async (db, id) => {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction("calories", "readwrite");
+    const store = transaction.objectStore("calories");
+    // Fetch the existing calorie using the id
+    const request = store.get(+id);
+
+    request.onsuccess = function (event) {
+      const existingCalories = event.target.result;
+      console.log(`existingCalories: ${existingCalories}`);
+      // Modify the calorie using the update function
+      const updatedCalories = idb.updateFunction(existingCalories);
+      // Put the updated calories back into the object store
+      const putRequest = store.put(updatedCalories);
+
+      putRequest.onsuccess = function () {
+        console.log("Calorie updated successfully");
+        resolve(true);
+      };
+      putRequest.onerror = function () {
+        console.error("Error updating calorie:", error);
+        reject(error);
+      };
+    };
+    request.onerror = function (error) {
+      console.error("Error fetching calorie:", error);
+      reject(error);
+    };
+    transaction.oncomplete = function () {
+      db.close();
+    };
+  });
+};
+
 async function test_getCalories() {
   const db = await idb.openCaloriesDB("caloriesdb", 1);
   const foodArray = await idb.getCaloriesByDate(db, "20240204", "20240204");
@@ -111,37 +156,31 @@ async function test_getCalories() {
 
 //Q: Do the things it the test supposed to be shown in the UI?
 
-/*
-async function testHaim() {
-  try {
-    const db = await idb.openCaloriesDB("caloriesdb", 1);
-    const result1 = await idb.addCalories(db, {
-      calorie: 200,
-      category: "LUNCH",
-      Name: "glass of milk",
-    });
+// async function testHaim() {
+//   try {
+//     const db = await idb.openCalorisDB("caloriesdb", 1);
+//     const result1 = await db.addCalories({
+//       calorie: 200,
+//       category: "LUNCH",
+//       description: "glass of milk",
+//     });
+//     const result2 = await db.addCalories({
+//       calorie: 300,
+//       category: "LUNCH",
+//       description: "pizza slice",
+//     });
+//     if (db) {
+//       console.log("creating db succeeded");
+//     }
+//     if (result1) {
+//       console.log("adding 1st cost succeeded");
+//     }
+//     if (result2) {
+//       console.log("adding 2nd cost succeeded");
+//     }
+//   } catch (error) {
+//     console.error("Test failed:", error);
+//   }
+// }
 
-    const result2 = await idb.addCalories(db, {
-      calorie: 300,
-      category: "LUNCH",
-      Description: "pizza slice",
-    });
-
-    if (db) {
-      console.log("Creating db succeeded");
-    }
-
-    if (result1) {
-      console.log("Adding 1st entry succeeded");
-    }
-
-    if (result2) {
-      console.log("Adding 2nd entry succeeded");
-    }
-  } catch (error) {
-    console.error("Test failed:", error);
-  }
-}
-
-testHaim();
-*/
+// testHaim();
