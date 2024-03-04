@@ -1,3 +1,11 @@
+// To do list:
+// ( ) Remove everything from the global scope
+// ( ) Write the report modal
+// ( ) Break script.js into 3 files:
+//        -calendar.js
+//        -foodModal.js
+//        -report.js
+// ( ) Write better error handling
 async function saveFood() {
   //Function to save the entered food information
 
@@ -58,6 +66,7 @@ function setEditModalValues(description, calories, category) {
   document.getElementById("categoryEdit").value = category;
 }
 
+// Unite these 3 somehow
 function validateSaveFields() {
   //A form validation function for the food saving modal
   const errFood = document.getElementById("errorMessageFood");
@@ -104,7 +113,7 @@ function validateFields(foodElement, caloriesElement, errFood, errCal) {
 
   return true;
 }
-
+//////////////////////
 function editFood(clickedButton) {
   //Function to edit or delete food entries
   //Need to find a way to seperate into one for edit and one for delete
@@ -216,11 +225,10 @@ async function renderFoodList(formattedDate) {
   // Fetch array of food items for the selected day
   const db = await idb.openCalorisDB("caloriesdb", 1);
   const foodArray = await db.getCaloriesByDate(formattedDate, formattedDate);
-
   // Render each food item in it's respective category
   foodArray.forEach((food) => {
-    const { description, calories, selectedCategory, id } = food; // added id
-    renderFoodListItem(description, calories, selectedCategory, id); // added id
+    const { description, calories, selectedCategory, id } = food;
+    renderFoodListItem(description, calories, selectedCategory, id);
   });
 }
 
@@ -258,9 +266,10 @@ function clearFoodList() {
 }
 
 function dateConvert(selectedDate) {
+  //receives [DD, MM, YYYY]], first cell day, second month, third year.
   //This function converts the date that appears at the top when clicking on a day in the
   //calendar to an index key. We use the index key to render food items on a picked day.
-  //The function turns the DD/MM/YYYY into YYYYMMDD
+  //The function turns the [DD,MM,YYYY] into YYYYMMDD
   //for example 29/5/1998 turns into 19980529
   const convertedDate = `${selectedDate[2]}${
     selectedDate[1] < 10
@@ -427,6 +436,7 @@ calendar.prevMonth = function () {
     calendar.currentYear--;
   }
   calendar.renderCalendar();
+  report.updateReport();
 };
 
 // Function to go to the next month
@@ -438,9 +448,207 @@ calendar.nextMonth = function () {
     calendar.currentYear++;
   }
   calendar.renderCalendar();
+  report.updateReport();
 };
+
+// Report namespace
+
+const report = {};
+report.updateReport = async function () {
+  report.totalCalories();
+  report.averageDailyCalories();
+  report.averageWeeklyCalories();
+  report.mostCaloriesConsumedInADay();
+  report.leastCaloriesConsumedInADay();
+  report.highestCalorieItem();
+  report.lowestCalorieItem();
+};
+report.totalCalories = async function () {
+  const db = await idb.openCalorisDB("caloriesdb", 1);
+  //hardcoded 1 because every month starts with 1
+  const firstDay = dateConvert([
+    1,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  //hardcoded 31 because every month ends at most at 31, +1 added
+  //because Date class starts months from 0
+  const lastDay = dateConvert([
+    31,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
+  //console.log(firstDay);
+  //console.log(lastDay);
+  let totalCalories = 0;
+  // Using forEach loop to sum up the calories,
+  //since calories are saved as string we use the Number constructor.
+  foodThisMonth.forEach((food) => {
+    totalCalories += Number(food.calories);
+  });
+  document.getElementById("totalCalories").textContent = totalCalories;
+  return totalCalories;
+};
+report.averageDailyCalories = async function () {
+  const totalDays = new Date(
+    calendar.currentYear,
+    calendar.currentMonth + 1,
+    0
+  ).getDate();
+  const totalCalories = await report.totalCalories();
+  const averageDailyCalories = Math.ceil(totalCalories / totalDays);
+  document.getElementById("averageDailyCalories").textContent =
+    averageDailyCalories;
+  return averageDailyCalories;
+};
+report.averageWeeklyCalories = async function () {
+  const totalCalories = await report.totalCalories();
+  const totalDays = new Date(
+    calendar.currentYear,
+    calendar.currentMonth + 1,
+    0
+  ).getDate();
+  const totalWeeks = totalDays / 7;
+  const averageWeeklyCalories = Math.ceil(totalCalories / totalWeeks);
+  //console.log(totalCalories, totalDays, totalWeeks, averageWeeklyCalories);
+  //console.log(averageWeeklyCalories);
+  document.getElementById("averageWeeklyCalories").textContent =
+    averageWeeklyCalories;
+  return averageWeeklyCalories;
+};
+
+//Finish this
+report.mostCaloriesConsumedInADay = async function () {
+  //***********Bad logic***********
+
+  const db = await idb.openCalorisDB("caloriesdb", 1);
+  //hardcoded 1 because every month starts with 1
+  const firstDay = dateConvert([
+    1,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  //hardcoded 31 because every month ends at most at 31, +1 added
+  //because Date class starts months from 0
+  const lastDay = dateConvert([
+    31,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
+  //console.log(firstDay);
+  //console.log(lastDay);
+  let mostCalories = 0;
+  //console.log(foodThisMonth);
+  // Using forEach loop to sum up the calories,
+  //since calories are saved as string we use the Number constructor.
+  foodThisMonth.forEach((food) => {
+    //console.log(food);
+    if (mostCalories < Number(food.calories)) {
+      mostCalories = Number(food.calories);
+    }
+  });
+  document.getElementById("mostCaloriesInADay").textContent = mostCalories;
+  return mostCalories;
+};
+//Finish this
+report.leastCaloriesConsumedInADay = async function () {
+  const db = await idb.openCalorisDB("caloriesdb", 1);
+  //hardcoded 1 because every month starts with 1
+  const firstDay = dateConvert([
+    1,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  //hardcoded 31 because every month ends at most at 31, +1 added
+  //because Date class starts months from 0
+  const lastDay = dateConvert([
+    31,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
+  //console.log(firstDay);
+  //console.log(lastDay);
+  //console.log(foodThisMonth);
+  let leastCalories;
+  if (foodThisMonth.length != 0) {
+    leastCalories = Number(foodThisMonth[0].calories);
+
+    // Using forEach loop to sum up the calories,
+    //since calories are saved as string we use the Number constructor.
+    foodThisMonth.forEach((food) => {
+      if (leastCalories > Number(food.calories) && Number(food.calories) != 0) {
+        leastCalories = Number(food.calories);
+      }
+    });
+  } else leastCalories = 0;
+  document.getElementById("leastCaloriesInADay").textContent = leastCalories;
+  return leastCalories;
+};
+report.highestCalorieItem = async function () {
+  const db = await idb.openCalorisDB("caloriesdb", 1);
+  const firstDay = dateConvert([
+    1,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  const lastDay = dateConvert([
+    31,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
+  const highestCalorieItem = { calories: 0, description: "" };
+  if (foodThisMonth[0]) {
+    foodThisMonth.forEach((food) => {
+      //console.log(food);
+      if (highestCalorieItem.calories < Number(food.calories)) {
+        highestCalorieItem.calories = Number(food.calories);
+        highestCalorieItem.description = food.description;
+      }
+    });
+  } else highestCalorieItem.description = "no food";
+  document.getElementById("highestCalorieItem").textContent =
+    highestCalorieItem.description;
+  return highestCalorieItem;
+};
+report.lowestCalorieItem = async function () {
+  const db = await idb.openCalorisDB("caloriesdb", 1);
+  const firstDay = dateConvert([
+    1,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  const lastDay = dateConvert([
+    31,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
+  const lowestCalorieItem = { calories: 0, description: "" };
+  if (foodThisMonth[0]) {
+    //initialize the lowestCalorieItem to be the first food item in the array of foods
+    lowestCalorieItem.calories = Number(foodThisMonth[0].calories);
+    lowestCalorieItem.description = foodThisMonth[0].description;
+    foodThisMonth.forEach((food) => {
+      if (lowestCalorieItem.calories > Number(food.calories)) {
+        lowestCalorieItem.calories = Number(food.calories);
+        lowestCalorieItem.description = food.description;
+      }
+    });
+  } else lowestCalorieItem.description = "no food";
+  document.getElementById("lowestCalorieItem").textContent =
+    lowestCalorieItem.description;
+  return lowestCalorieItem.description;
+};
+//Finish this
+report.numberOfFastingDays = function () {};
 
 // Initial rendering
 calendar.renderCalendar();
 
 setSelectedCategoryInModal();
+
+report.updateReport();

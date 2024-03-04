@@ -5,7 +5,7 @@ const idb = {};
 idb.openCalorisDB = async (dbName, version) => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName, version);
-
+    //console.log("creating db");
     request.onerror = function (event) {
       console.error("An error happened with indexedDB:");
       console.error(event);
@@ -51,6 +51,7 @@ idb.openCalorisDB = async (dbName, version) => {
         });
       };
       db.getCaloriesByDate = async (startRange, endRange) => {
+        //The date needs to be passed as a string
         return new Promise((resolve, reject) => {
           const transaction = db.transaction("calories", "readonly");
           const store = transaction.objectStore("calories");
@@ -134,6 +135,7 @@ idb.openCalorisDB = async (dbName, version) => {
           };
         });
       };
+      //console.log("db created");
       resolve(db);
     };
   });
