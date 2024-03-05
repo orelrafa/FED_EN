@@ -31,11 +31,25 @@ idb.openCalorisDB = async (dbName, version) => {
       //Below we are exposing the functions to the db object
       db.addCalories = async (calorieData) => {
         return new Promise((resolve, reject) => {
+
+          //check all required fields
           if(!calorieData.calorie || !calorieData.description || !calorieData.category){
             console.error("One or more required fields are missing!");
             reject("Missing fields!");
             return;
           }
+
+          //if an item is added not from the UI (for example the test) and has no date, the default date will be today's date.
+          if(!calorieData.hasOwnProperty('selectedDate')){
+            const date = new Date();
+            let month = date.getMonth() +1;
+            let day = date.getDate();
+            month = month <10 ? '0' + month : month;
+            day = day < 10? '0' + day:day;
+            const currentDate = `${date.getFullYear()}${month}${day}`
+            calorieData.selectedDate = currentDate;
+          }
+
           const transaction = db.transaction("calories", "readwrite");
           const store = transaction.objectStore("calories");
           calorieData.category = calorieData.category.toString().toLowerCase();
@@ -146,6 +160,8 @@ idb.openCalorisDB = async (dbName, version) => {
     };
   });
 };
+
+
 
 //Q: Do the things it the test supposed to be shown in the UI?
 
