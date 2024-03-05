@@ -41,7 +41,7 @@ idb.openCalorisDB = async (dbName, version) => {
 
           //if an item is added not from the UI (for example the test) and has no date, the default date will be today's date.
           if(!calorieData.hasOwnProperty('selectedDate')){
-            const date = new Date();
+            const date = calendar.currentDate;
             let month = date.getMonth() +1;
             let day = date.getDate();
             month = month <10 ? '0' + month : month;
@@ -165,35 +165,35 @@ idb.openCalorisDB = async (dbName, version) => {
 
 //Q: Do the things it the test supposed to be shown in the UI?
 
-// async function testHaim() {
-//   try {
-//     async function test() {
-//       const db = await idb.openCalorisDB("caloriesdb", 1);
-//       const result1 = await db.addCalories({
-//         calorie: 200,
-//         category: "LUNCH",
-//         description: "glass of milk",
-//       });
-//       const result2 = await db.addCalories({
-//         calorie: 300,
-//         category: "LUNCH",
-//         description: "pizza slice",
-//       });
-//       if (db) {
-//         console.log("creating db succeeded");
-//       }
-//       if (result1) {
-//         console.log("adding 1st cost succeeded");
-//       }
-//       if (result2) {
-//         console.log("adding 2nd cost succeeded");
-//       }
-//     }
-//     test();
-//   } catch (error) {
-//     console.error("Test failed:", error);
-//   }
-// }
-//
-// testHaim();
+async function testHaim() {
+  try {
+    async function test() {
+      const db = await idb.openCalorisDB("caloriesdb", 1);
+      const result1 = await db.addCalories({
+        calorie: 200,
+        category: "LUNCH",
+        description: "glass of milk",
+      });
+      const result2 = await db.addCalories({
+        calorie: 300,
+        category: "LUNCH",
+        description: "pizza slice",
+      });
+      if (db) {
+        console.log("creating db succeeded");
+      }
+      if (result1) {
+        console.log("adding 1st cost succeeded");
+      }
+      if (result2) {
+        console.log("adding 2nd cost succeeded");
+      }
+    }
+    test();
+  } catch (error) {
+    console.error("Test failed:", error);
+  }
+}
+
+testHaim();
 
