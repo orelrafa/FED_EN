@@ -31,6 +31,11 @@ idb.openCalorisDB = async (dbName, version) => {
       //Below we are exposing the functions to the db object
       db.addCalories = async (calorieData) => {
         return new Promise((resolve, reject) => {
+          if(!calorieData.calorie || !calorieData.description || !calorieData.category){
+            console.error("One or more required fields are missing!");
+            reject("Missing fields!");
+            return;
+          }
           const transaction = db.transaction("calories", "readwrite");
           const store = transaction.objectStore("calories");
           calorieData.category = calorieData.category.toString().toLowerCase();
@@ -144,34 +149,35 @@ idb.openCalorisDB = async (dbName, version) => {
 
 //Q: Do the things it the test supposed to be shown in the UI?
 
-async function testHaim() {
-  try {
-    async function test() {
-      const db = await idb.openCalorisDB("caloriesdb", 1);
-      const result1 = await db.addCalories({
-        calorie: 200,
-        category: "LUNCH",
-        description: "glass of milk",
-      });
-      const result2 = await db.addCalories({
-        calorie: 300,
-        category: "LUNCH",
-        description: "pizza slice",
-      });
-      if (db) {
-        console.log("creating db succeeded");
-      }
-      if (result1) {
-        console.log("adding 1st cost succeeded");
-      }
-      if (result2) {
-        console.log("adding 2nd cost succeeded");
-      }
-    }
-    test();
-  } catch (error) {
-    console.error("Test failed:", error);
-  }
-}
+// async function testHaim() {
+//   try {
+//     async function test() {
+//       const db = await idb.openCalorisDB("caloriesdb", 1);
+//       const result1 = await db.addCalories({
+//         calorie: 200,
+//         category: "LUNCH",
+//         description: "glass of milk",
+//       });
+//       const result2 = await db.addCalories({
+//         calorie: 300,
+//         category: "LUNCH",
+//         description: "pizza slice",
+//       });
+//       if (db) {
+//         console.log("creating db succeeded");
+//       }
+//       if (result1) {
+//         console.log("adding 1st cost succeeded");
+//       }
+//       if (result2) {
+//         console.log("adding 2nd cost succeeded");
+//       }
+//     }
+//     test();
+//   } catch (error) {
+//     console.error("Test failed:", error);
+//   }
+// }
+//
+// testHaim();
 
-//testHaim();
