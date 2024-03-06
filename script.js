@@ -219,7 +219,6 @@ function closeFoodModal() {
   // function that closes the food addition modal
   document.getElementById("foodModal").style.display = "none";
   document.querySelector(".modal-backdrop").remove();
-
 }
 
 async function renderFoodList(formattedDate) {
@@ -228,12 +227,12 @@ async function renderFoodList(formattedDate) {
   const foodArray = await db.getCaloriesByDate(formattedDate, formattedDate);
   // Render each food item in it's respective category
   foodArray.forEach((food) => {
-    const { calorie, category,description, id } = food;
-    renderFoodListItem(calorie,category,description,id);
+    const { calorie, category, description, id } = food;
+    renderFoodListItem(calorie, category, description, id);
   });
 }
 
-function renderFoodListItem(calorie,category,description,id) {
+function renderFoodListItem(calorie, category, description, id) {
   //create new list item with entered information
   const listItem = document.createElement("button");
   listItem.type = "button";
@@ -250,9 +249,7 @@ function renderFoodListItem(calorie,category,description,id) {
 
   //render the new list item in the corresponding category in the food list
   const foodList = document.getElementById("foodList");
-  foodList
-    .querySelector(`[data-category="${category}"]`)
-    .after(listItem);
+  foodList.querySelector(`[data-category="${category}"]`).after(listItem);
 }
 
 function clearFoodList() {
@@ -519,75 +516,182 @@ report.averageWeeklyCalories = async function () {
   return averageWeeklyCalories;
 };
 
-//Finish this
+// Calculates the day with the most calories consumed in a given month.
+// Retrieves data from an IndexedDB database, processes the information, and updates the report.
+
 report.mostCaloriesConsumedInADay = async function () {
-  //***********Bad logic***********
+  // Initialize variables to track daily calorie consumption
+  let sumOfTheDay = 0;
+  let mostCaloriesConsumedInADay = 0;
 
+  // Open the IndexedDB database
   const db = await idb.openCalorisDB("caloriesdb", 1);
-  //hardcoded 1 because every month starts with 1
-  const firstDay = dateConvert([
+
+  // Calculate the first and last dates of the current month
+  const firstDate = dateConvert([
     1,
     calendar.currentMonth + 1,
     calendar.currentYear,
   ]);
-  //hardcoded 31 because every month ends at most at 31, +1 added
-  //because Date class starts months from 0
-  const lastDay = dateConvert([
+  const lastDate = dateConvert([
     31,
     calendar.currentMonth + 1,
     calendar.currentYear,
   ]);
-  const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
-  //console.log(firstDay);
-  //console.log(lastDay);
-  let mostCalories = 0;
-  //console.log(foodThisMonth);
-  // Using forEach loop to sum up the calories,
-  //since calories are saved as string we use the Number constructor.
-  foodThisMonth.forEach((food) => {
-    //console.log(food);
-    if (mostCalories < Number(food.calorie)) {
-      mostCalories = Number(food.calorie);
-    }
-  });
-  document.getElementById("mostCaloriesInADay").textContent = mostCalories;
-  return mostCalories;
-};
-//Finish this
-report.leastCaloriesConsumedInADay = async function () {
-  const db = await idb.openCalorisDB("caloriesdb", 1);
-  //hardcoded 1 because every month starts with 1
-  const firstDay = dateConvert([
-    1,
-    calendar.currentMonth + 1,
-    calendar.currentYear,
-  ]);
-  //hardcoded 31 because every month ends at most at 31, +1 added
-  //because Date class starts months from 0
-  const lastDay = dateConvert([
-    31,
-    calendar.currentMonth + 1,
-    calendar.currentYear,
-  ]);
-  const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
-  //console.log(firstDay);
-  //console.log(lastDay);
-  //console.log(foodThisMonth);
-  let leastCalories;
-  if (foodThisMonth.length != 0) {
-    leastCalories = Number(foodThisMonth[0].calorie);
 
-    // Using forEach loop to sum up the calories,
-    //since calories are saved as string we use the Number constructor.
+  // Retrieve food data for the current month from the database
+  const foodThisMonth = await db.getCaloriesByDate(
+    `${firstDate}`,
+    `${lastDate}`
+  );
+
+  // Check if there is any food data for the current month
+  if (foodThisMonth.length > 0) {
+    // Initialize the current day with the first food data date
+    let currentDay = foodThisMonth[0].selectedDate;
+
+    // Uncomment this for testing
+    // Array to store the total calories consumed for each day
+    // const totalCaloriesPerDay = [];
+
+    // Iterate through the food data for the current month
     foodThisMonth.forEach((food) => {
-      if (leastCalories > Number(food.calorie) && Number(food.calorie) != 0) {
-        leastCalories = Number(food.calorie);
+      // Check if the current food entry belongs to the same day
+      if (currentDay === food.selectedDate) {
+        // Add the calories of the current food to the sum for the day
+        sumOfTheDay += Number(food.calorie);
+      } else {
+        // Update the most calories consumed in a day if the current day's sum is higher
+        mostCaloriesConsumedInADay = Math.max(
+          mostCaloriesConsumedInADay,
+          sumOfTheDay
+        );
+
+        // Uncomment this for testing
+        // Save the sum of calories for the previous day in the array
+        //totalCaloriesPerDay.push(sumOfTheDay);
+
+        // Update the current day and start calculating the sum for the new day
+        currentDay = food.selectedDate;
+        sumOfTheDay = Number(food.calorie);
       }
     });
-  } else leastCalories = 0;
-  document.getElementById("leastCaloriesInADay").textContent = leastCalories;
-  return leastCalories;
+
+    // Update most calories consumed for the last day in case it's the highest
+    mostCaloriesConsumedInADay = Math.max(
+      mostCaloriesConsumedInADay,
+      sumOfTheDay
+    );
+
+    // Uncomment this for testing
+    // Save the sum of calories for the last day in the array
+    //totalCaloriesPerDay.push(sumOfTheDay);
+
+    // Uncomment this for testing
+    // Log the highest calories consumed in a day and the total calories for each day
+    //console.log("Most calories consumed in a day:", mostCaloriesConsumedInADay);
+    //console.log("Total calories consumed per day:", totalCaloriesPerDay);
+  }
+
+  // Update the DOM with the most calories consumed in a day
+  document.getElementById("mostCaloriesConsumedInADay").textContent =
+    mostCaloriesConsumedInADay;
+
+  // Return the highest number of calories consumed in a day during the specified month
+  return mostCaloriesConsumedInADay;
 };
+
+// Calculates the day with the least calories consumed
+// (excluding 0) in a given month.
+// Retrieves data from an IndexedDB database, processes the information, and updates the report.
+
+report.leastCaloriesConsumedInADay = async function () {
+  // Initialize variables to track daily calorie consumption
+  let sumOfTheDay = 0;
+  let leastCaloriesConsumedInADay = Infinity; // Start with a high initial value
+
+  // Open the IndexedDB database
+  const db = await idb.openCalorisDB("caloriesdb", 1);
+
+  // Calculate the first and last dates of the current month
+  const firstDate = dateConvert([
+    1,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  const lastDate = dateConvert([
+    31,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+
+  // Retrieve food data for the current month from the database
+  const foodThisMonth = await db.getCaloriesByDate(
+    `${firstDate}`,
+    `${lastDate}`
+  );
+
+  // Check if there is any food data for the current month
+  if (foodThisMonth.length > 0) {
+    // Initialize the current day with the first day's date
+    let currentDay = foodThisMonth[0].selectedDate;
+
+    // Uncomment this for testing
+    // Array to store the total calories consumed for each day
+    //const totalCaloriesPerDay = [];
+
+    // Iterate through the food data for the current month
+    foodThisMonth.forEach((food) => {
+      // Check if the current food entry belongs to the same day
+      if (currentDay === food.selectedDate) {
+        // Add the calories of the current food to the sum for the day
+        sumOfTheDay += Number(food.calorie);
+      } else {
+        // Update the least calories consumed in a day if the current day's sum is lower
+        if (sumOfTheDay > 0) {
+          leastCaloriesConsumedInADay = Math.min(
+            leastCaloriesConsumedInADay,
+            sumOfTheDay
+          );
+        }
+        // Uncomment this for testing
+        // Save the sum of calories for the previous day in the array
+        //totalCaloriesPerDay.push(sumOfTheDay);
+
+        // Update the current day and start calculating the sum for the new day
+        currentDay = food.selectedDate;
+        sumOfTheDay = Number(food.calorie);
+      }
+    });
+
+    // Update least calories consumed for the last day in case it's the lowest
+    if (sumOfTheDay > 0) {
+      leastCaloriesConsumedInADay = Math.min(
+        leastCaloriesConsumedInADay,
+        sumOfTheDay
+      );
+    }
+    // Uncomment this for testing
+    // Save the sum of calories for the last day in the array
+    //totalCaloriesPerDay.push(sumOfTheDay);
+
+    // Uncomment this for testing
+    // Log the least calories consumed in a day and the total calories for each day
+    //console.log(
+    //  "Least calories consumed in a day:",
+    //  leastCaloriesConsumedInADay
+    //);
+    //console.log("Total calories consumed per day:", totalCaloriesPerDay);
+  }
+
+  // Update the DOM with the least calories consumed in a day
+  document.getElementById("leastCaloriesConsumedInADay").textContent =
+    leastCaloriesConsumedInADay;
+
+  // Return the least number of calories consumed in a day during the specified month
+  return leastCaloriesConsumedInADay;
+};
+
 report.highestCalorieItem = async function () {
   const db = await idb.openCalorisDB("caloriesdb", 1);
   const firstDay = dateConvert([
