@@ -1,3 +1,4 @@
+"use strict";
 // To do list:
 // ( ) Remove everything from the global scope
 // ( ) Write the report modal
@@ -256,7 +257,7 @@ function clearFoodList() {
   //This function clears the rendered food items. Usually used when the food modal is closed
   //so that new food items can be rendered on a freshly picked date
   //get the items that are rendered
-  renderedFoodItems = document.querySelectorAll(".rendered-group-item");
+  const renderedFoodItems = document.querySelectorAll(".rendered-group-item");
   //remove the items that are rendered
   renderedFoodItems.forEach((item) => {
     item.remove();
