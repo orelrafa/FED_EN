@@ -175,6 +175,7 @@ function editFood(clickedButton) {
     foodEditModal.hide();
     document.body.classList.remove("modal-open");
     deleteModalBackdrop();
+    report.updateReport();
   };
 
   // Delete the food item when the "Delete" button is clicked
@@ -196,8 +197,9 @@ function editFood(clickedButton) {
     foodEditModal.hide();
     document.body.classList.remove("modal-open");
     deleteModalBackdrop();
+    report.updateReport();
   };
-
+  report.updateReport();
   cleanEditErrorMessages();
 }
 
@@ -220,6 +222,7 @@ function closeFoodModal() {
   // function that closes the food addition modal
   document.getElementById("foodModal").style.display = "none";
   document.querySelector(".modal-backdrop").remove();
+  report.updateReport();
 }
 
 async function renderFoodList(formattedDate) {
@@ -282,7 +285,6 @@ function dateConvert(selectedDate) {
   return convertedDate;
 }
 
-//DONE REFACTORING
 function toggleFoodCalendar() {
   //The function is used to toggle between the food modal and the calendar
   //When on a calendar and picking a day, the calendar vanishes and we are
@@ -453,6 +455,7 @@ calendar.nextMonth = function () {
 // Report namespace
 
 const report = {};
+
 report.updateReport = async function () {
   report.totalCalories();
   report.averageDailyCalories();
@@ -461,7 +464,9 @@ report.updateReport = async function () {
   report.leastCaloriesConsumedInADay();
   report.highestCalorieItem();
   report.lowestCalorieItem();
+  report.numberOfItemsPerDay();
 };
+
 report.totalCalories = async function () {
   const db = await idb.openCalorisDB("caloriesdb", 1);
   //hardcoded 1 because every month starts with 1
@@ -478,17 +483,17 @@ report.totalCalories = async function () {
     calendar.currentYear,
   ]);
   const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
-  //console.log(firstDay);
-  //console.log(lastDay);
   let totalCalories = 0;
+
   // Using forEach loop to sum up the calories,
-  //since calories are saved as string we use the Number constructor.
+  // Calories are saved as string we use the Number constructor.
   foodThisMonth.forEach((food) => {
     totalCalories += Number(food.calorie);
   });
   document.getElementById("totalCalories").textContent = totalCalories;
   return totalCalories;
 };
+
 report.averageDailyCalories = async function () {
   const totalDays = new Date(
     calendar.currentYear,
@@ -501,6 +506,7 @@ report.averageDailyCalories = async function () {
     averageDailyCalories;
   return averageDailyCalories;
 };
+
 report.averageWeeklyCalories = async function () {
   const totalCalories = await report.totalCalories();
   const totalDays = new Date(
@@ -519,7 +525,6 @@ report.averageWeeklyCalories = async function () {
 
 // Calculates the day with the most calories consumed in a given month.
 // Retrieves data from an IndexedDB database, processes the information, and updates the report.
-
 report.mostCaloriesConsumedInADay = async function () {
   // Initialize variables to track daily calorie consumption
   let sumOfTheDay = 0;
@@ -684,7 +689,9 @@ report.leastCaloriesConsumedInADay = async function () {
     //);
     //console.log("Total calories consumed per day:", totalCaloriesPerDay);
   }
-
+  if (leastCaloriesConsumedInADay === Infinity) {
+    leastCaloriesConsumedInADay = 0;
+  }
   // Update the DOM with the least calories consumed in a day
   document.getElementById("leastCaloriesConsumedInADay").textContent =
     leastCaloriesConsumedInADay;
@@ -749,10 +756,70 @@ report.lowestCalorieItem = async function () {
     lowestCalorieItem.description;
   return lowestCalorieItem.description;
 };
-//Finish this
-report.numberOfFastingDays = function () {};
 
-// Initial rendering
+//returns an array with the number of items per day where there's food and updates the report
+//items for "Highest food item count in a day", "Lowest food item count in a day" and "Number of Fasting Days"
+report.numberOfItemsPerDay = async function () {
+  let numberOfItems = 0;
+  let numberOfFastingDays = new Date(
+    calendar.currentYear,
+    calendar.currentMonth + 1,
+    0
+  ).getDate();
+  const db = await idb.openCalorisDB("caloriesdb", 1);
+  const firstDate = dateConvert([
+    1,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  const lastDate = dateConvert([
+    31,
+    calendar.currentMonth + 1,
+    calendar.currentYear,
+  ]);
+  const foodThisMonth = await db.getCaloriesByDate(
+    `${firstDate}`,
+    `${lastDate}`
+  );
+  const totalItemsPerDay = [];
+
+  if (foodThisMonth.length > 0) {
+    let currentDay = foodThisMonth[0].selectedDate;
+    foodThisMonth.forEach((food) => {
+      // Check if the current food entry belongs to the same day
+      if (currentDay === food.selectedDate) {
+        // updates the number of items by 1 per entry on the same day
+        numberOfItems++;
+      } else {
+        // Save the sum of items for the previous day in the array
+        totalItemsPerDay.push(numberOfItems);
+
+        // Update the current day and start calculating the sum for the new day
+        currentDay = food.selectedDate;
+        numberOfItems = 1;
+      }
+    });
+
+    // Update the food items in the last day
+    totalItemsPerDay.push(numberOfItems);
+    numberOfFastingDays = numberOfFastingDays - totalItemsPerDay.length;
+  }
+
+  // Update the DOM with the most calories consumed in a day
+
+  //console.log(numberOfDaysInMonth);
+  //console.log(totalItemsPerDay);
+  //console.log(Math.min(...totalItemsPerDay));
+  document.getElementById("numberOfFastingDays").textContent =
+    numberOfFastingDays;
+  document.getElementById("highestFoodItemCountInADay").textContent =
+    foodThisMonth.length > 0 ? Math.max(...totalItemsPerDay) : 0;
+  document.getElementById("lowestFoodItemCountInADay").textContent =
+    foodThisMonth.length > 0 ? Math.min(...totalItemsPerDay) : 0;
+  return totalItemsPerDay;
+};
+
+// Initial setup
 calendar.renderCalendar();
 
 setSelectedCategoryInModal();
