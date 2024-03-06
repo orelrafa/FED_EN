@@ -33,7 +33,7 @@ idb.openCalorisDB = async (dbName, version) => {
         return new Promise((resolve, reject) => {
           //check all required fields
           if (
-            !calorieData.calorie ||
+            calorieData.calorie < 0 ||
             !calorieData.description ||
             !calorieData.category
           ) {
@@ -166,34 +166,34 @@ idb.openCalorisDB = async (dbName, version) => {
 
 //Q: Do the things it the test supposed to be shown in the UI?
 
-async function testHaim() {
-  try {
-    async function test() {
-      const db = await idb.openCalorisDB("caloriesdb", 1);
-      const result1 = await db.addCalories({
-        calorie: 200,
-        category: "LUNCH",
-        description: "glass of milk",
-      });
-      const result2 = await db.addCalories({
-        calorie: 300,
-        category: "LUNCH",
-        description: "pizza slice",
-      });
-      if (db) {
-        console.log("creating db succeeded");
-      }
-      if (result1) {
-        console.log("adding 1st cost succeeded");
-      }
-      if (result2) {
-        console.log("adding 2nd cost succeeded");
-      }
-    }
-    test();
-  } catch (error) {
-    console.error("Test failed:", error);
-  }
-}
+// async function testHaim() {
+//   try {
+//     async function test() {
+//       const db = await idb.openCalorisDB("caloriesdb", 1);
+//       const result1 = await db.addCalories({
+//         calorie: 200,
+//         category: "LUNCH",
+//         description: "glass of milk",
+//       });
+//       const result2 = await db.addCalories({
+//         calorie: 300,
+//         category: "LUNCH",
+//         description: "pizza slice",
+//       });
+//       if (db) {
+//         console.log("creating db succeeded");
+//       }
+//       if (result1) {
+//         console.log("adding 1st cost succeeded");
+//       }
+//       if (result2) {
+//         console.log("adding 2nd cost succeeded");
+//       }
+//     }
+//     test();
+//   } catch (error) {
+//     console.error("Test failed:", error);
+//   }
+// }
 
-//testHaim();
+// testHaim();
