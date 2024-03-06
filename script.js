@@ -26,17 +26,17 @@ async function saveFood() {
   try {
     const db = await idb.openCalorisDB("caloriesdb", 1);
     const id = await db.addCalories({
+      calorie: parseInt(enteredCalories),
+      category: selectedCategory,
       description: enteredDescription,
-      calories: enteredCalories,
-      selectedCategory,
       selectedDate,
     });
 
     // Render the new item with the id attached to the html
     renderFoodListItem(
-      enteredDescription,
       enteredCalories,
       selectedCategory,
+      enteredDescription,
       id
     );
   } catch (error) {
@@ -219,6 +219,7 @@ function closeFoodModal() {
   // function that closes the food addition modal
   document.getElementById("foodModal").style.display = "none";
   document.querySelector(".modal-backdrop").remove();
+
 }
 
 async function renderFoodList(formattedDate) {
@@ -227,12 +228,12 @@ async function renderFoodList(formattedDate) {
   const foodArray = await db.getCaloriesByDate(formattedDate, formattedDate);
   // Render each food item in it's respective category
   foodArray.forEach((food) => {
-    const { description, calories, selectedCategory, id } = food;
-    renderFoodListItem(description, calories, selectedCategory, id);
+    const { calorie, category,description, id } = food;
+    renderFoodListItem(calorie,category,description,id);
   });
 }
 
-function renderFoodListItem(description, calories, selectedCategory, id) {
+function renderFoodListItem(calorie,category,description,id) {
   //create new list item with entered information
   const listItem = document.createElement("button");
   listItem.type = "button";
@@ -241,8 +242,8 @@ function renderFoodListItem(description, calories, selectedCategory, id) {
     "list-group-item-action",
     "rendered-group-item"
   );
-  listItem.innerHTML = `<span>${description}</span><span class="badge">${calories} Calories</span>`;
-  listItem.setAttribute("data-category", selectedCategory);
+  listItem.innerHTML = `<span>${description}</span><span class="badge">${calorie} Calories</span>`;
+  listItem.setAttribute("data-category", category);
   listItem.setAttribute("data-id", id);
   //adds ability to edit food on click on item
   listItem.setAttribute("onClick", "editFood(this)");
@@ -250,7 +251,7 @@ function renderFoodListItem(description, calories, selectedCategory, id) {
   //render the new list item in the corresponding category in the food list
   const foodList = document.getElementById("foodList");
   foodList
-    .querySelector(`[data-category="${selectedCategory}"]`)
+    .querySelector(`[data-category="${category}"]`)
     .after(listItem);
 }
 
@@ -485,7 +486,7 @@ report.totalCalories = async function () {
   // Using forEach loop to sum up the calories,
   //since calories are saved as string we use the Number constructor.
   foodThisMonth.forEach((food) => {
-    totalCalories += Number(food.calories);
+    totalCalories += Number(food.calorie);
   });
   document.getElementById("totalCalories").textContent = totalCalories;
   return totalCalories;
@@ -545,8 +546,8 @@ report.mostCaloriesConsumedInADay = async function () {
   //since calories are saved as string we use the Number constructor.
   foodThisMonth.forEach((food) => {
     //console.log(food);
-    if (mostCalories < Number(food.calories)) {
-      mostCalories = Number(food.calories);
+    if (mostCalories < Number(food.calorie)) {
+      mostCalories = Number(food.calorie);
     }
   });
   document.getElementById("mostCaloriesInADay").textContent = mostCalories;
@@ -574,13 +575,13 @@ report.leastCaloriesConsumedInADay = async function () {
   //console.log(foodThisMonth);
   let leastCalories;
   if (foodThisMonth.length != 0) {
-    leastCalories = Number(foodThisMonth[0].calories);
+    leastCalories = Number(foodThisMonth[0].calorie);
 
     // Using forEach loop to sum up the calories,
     //since calories are saved as string we use the Number constructor.
     foodThisMonth.forEach((food) => {
-      if (leastCalories > Number(food.calories) && Number(food.calories) != 0) {
-        leastCalories = Number(food.calories);
+      if (leastCalories > Number(food.calorie) && Number(food.calorie) != 0) {
+        leastCalories = Number(food.calorie);
       }
     });
   } else leastCalories = 0;
@@ -600,12 +601,12 @@ report.highestCalorieItem = async function () {
     calendar.currentYear,
   ]);
   const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
-  const highestCalorieItem = { calories: 0, description: "" };
+  const highestCalorieItem = { calorie: 0, description: "" };
   if (foodThisMonth[0]) {
     foodThisMonth.forEach((food) => {
       //console.log(food);
-      if (highestCalorieItem.calories < Number(food.calories)) {
-        highestCalorieItem.calories = Number(food.calories);
+      if (highestCalorieItem.calorie < Number(food.calorie)) {
+        highestCalorieItem.calorie = Number(food.calorie);
         highestCalorieItem.description = food.description;
       }
     });
@@ -627,14 +628,14 @@ report.lowestCalorieItem = async function () {
     calendar.currentYear,
   ]);
   const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
-  const lowestCalorieItem = { calories: 0, description: "" };
+  const lowestCalorieItem = { calorie: 0, description: "" };
   if (foodThisMonth[0]) {
     //initialize the lowestCalorieItem to be the first food item in the array of foods
-    lowestCalorieItem.calories = Number(foodThisMonth[0].calories);
+    lowestCalorieItem.calorie = Number(foodThisMonth[0].calorie);
     lowestCalorieItem.description = foodThisMonth[0].description;
     foodThisMonth.forEach((food) => {
-      if (lowestCalorieItem.calories > Number(food.calories)) {
-        lowestCalorieItem.calories = Number(food.calories);
+      if (lowestCalorieItem.calorie > Number(food.calorie)) {
+        lowestCalorieItem.calorie = Number(food.calorie);
         lowestCalorieItem.description = food.description;
       }
     });
