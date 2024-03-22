@@ -1,3 +1,9 @@
+<!--
+  Developers:
+  First name: Orel, Nikita
+  Last name: Rafailov, Borochov
+  ID: *********, *********
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,19 +20,30 @@
 </head>
 <body>
 <div
-  class="modal modal-sheet position-static d-block bg-body-secondary py-md-5"
+  class="modal modal-sheet position-static d-block bg-body-secondary py-md-5 "
   tabindex="-1"
   role="dialog"
   id="modalTour"
+  style="background-image: url('./images/background.webp') !important; "
 >
+
+
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-6 mb-5">
+        <!------ The Calendar ------->
         <div class="calendar-container">
+          <div class="alert text-center" role="alert">
+            Click on a day to start tracking!
+          </div>
           <div class="calendar-header">
-            <button id="prevBtn" onclick="prevMonth()">&lt;</button>
+            <button id="prevBtn" onclick="calendar.prevMonth()">
+              &lt;
+            </button>
             <h2 id="monthYear">Month Year</h2>
-            <button id="nextBtn" onclick="nextMonth()">&gt;</button>
+            <button id="nextBtn" onclick="calendar.nextMonth()">
+              &gt;
+            </button>
           </div>
           <div class="calendar">
             <table>
@@ -34,10 +51,17 @@
             </table>
           </div>
         </div>
+        <!------ End of The Calendar ------->
+        <!------ The Food Manager ------->
         <div
           class="food-edit-menu-container modal-dialog d-none"
           role="document"
         >
+          <div class="alert text-center" role="alert">
+            Click on "+" to add food!
+            <br>
+            Or click on an existing item to edit!
+          </div>
           <div class="modal-content rounded-4 shadow">
             <div class="modal-body p-5">
               <button
@@ -45,10 +69,10 @@
                 class="btn-close float-end food-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
-                onclick="closeFoodModal()"
+                onclick="foodManager.toggleFoodCalendar()"
               ></button>
               <h2 class="fw-bold text-center">Calorie Tracker</h2>
-              <h3 class="text-center mb-4 selected-date text-secondary">
+              <h3 class="text-center mb-4 text-secondary selected-date">
                 dd/mm/yy
               </h3>
 
@@ -136,18 +160,21 @@
                         class="close"
                         data-bs-dismiss="modal"
                         aria-label="Close"
+                        onclick="foodManager.clearSaveFoodFields()"
                       >
-                        <span class="close_icon" aria-hidden="true">&times;</span>
+                            <span class="close_icon" aria-hidden="true"
+                            >&times;</span
+                            >
                       </button>
                     </div>
                     <div class="modal-body">
                       <form id="foodForm">
                         <div class="form-group">
-                          <label for="foodName">Food Name:</label>
+                          <label for="description">Description:</label>
                           <input
                             type="text"
                             class="form-control"
-                            id="foodName"
+                            id="description"
                             required
                           />
                           <div class="errorMsg" id="errorMessageFood"></div>
@@ -178,13 +205,14 @@
                         type="button"
                         class="btn btn-secondary"
                         data-bs-dismiss="modal"
+                        onclick="foodManager.clearSaveFoodFields()"
                       >
                         Close
                       </button>
                       <button
                         type="button"
                         class="btn btn-primary"
-                        onclick="saveFood()"
+                        onclick="foodManager.saveFood()"
                       >
                         Save
                       </button>
@@ -195,32 +223,58 @@
               <!------ End of The Modal After Clicking on "+" To Add Food ------->
 
               <!------ The Modal for editing food entries ------->
-              <div class="modal"
-                   id="foodModalEdit"
-                   tabindex="-1"
-                   role="dialog"
-                   aria-labelledby="foodModalLabelEdit"
-                   aria-hidden="true"
+              <div
+                class="modal"
+                id="foodModalEdit"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="foodModalLabelEdit"
+                aria-hidden="true"
               >
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="foodModalEditLabel">Edit Food Information</h5>
-                      <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span class="close_icon" aria-hidden="true">&times;</span>
+                      <h5 class="modal-title" id="foodModalEditLabel">
+                        Edit Food Information
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      >
+                            <span class="close_icon" aria-hidden="true"
+                            >&times;</span
+                            >
                       </button>
                     </div>
                     <div class="modal-body">
                       <form id="foodEditForm">
                         <div class="form-group">
-                          <label for="foodNameEdit">Food Name:</label>
-                          <input type="text" class="form-control" id="foodNameEdit" required>
-                          <div class="errorMsg" id="errorMessageFoodEdit"></div>
+                          <label for="descriptionEdit">Description:</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="descriptionEdit"
+                            required
+                          />
+                          <div
+                            class="errorMsg"
+                            id="errorMessageFoodEdit"
+                          ></div>
                         </div>
                         <div class="form-group">
                           <label for="caloriesEdit">Calories:</label>
-                          <input type="number" class="form-control" id="caloriesEdit" required>
-                          <div class="errorMsg" id="errorMessageCalEdit"></div>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="caloriesEdit"
+                            required
+                          />
+                          <div
+                            class="errorMsg"
+                            id="errorMessageCalEdit"
+                          ></div>
                         </div>
                         <div class="form-group">
                           <label for="categoryEdit">Category:</label>
@@ -234,9 +288,27 @@
                       </form>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary" id="saveEditedFood">Save Changes</button>
-                      <button type="button" class="btn btn-danger" id="deleteFood">Delete</button>
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="saveEditedFood"
+                      >
+                        Save Changes
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-danger"
+                        id="deleteFood"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -245,45 +317,62 @@
             </div>
           </div>
         </div>
+        <!------ End of The Food Manager ------->
       </div>
 
       <div class="col-md-6">
+        <!------ The Report ------->
         <div class="container">
           <div class="row justify-content-center">
-            <div class="card rounded-4 shadow">
+            <div class="card rounded-4 shadow report-body">
               <div class="card-body">
                 <h2 class="card-title fw-bold mt-4 mb-3 text-center">
                   Monthly Report
                 </h2>
-                <p class="card-text">Total Calories: <span>0</span></p>
                 <p class="card-text">
-                  Average Daily Calories: <span>0</span>
+                  Total Calories: <span id="totalCalories"></span>
                 </p>
                 <p class="card-text">
-                  Average Weekly Calories: <span>0</span>
+                  Average Daily Calories:
+                  <span id="averageDailyCalories"></span>
                 </p>
                 <p class="card-text">
-                  Highest Caloric Consumption In a Day: <span>0</span>
+                  Average Weekly Calories:
+                  <span id="averageWeeklyCalories"></span>
                 </p>
                 <p class="card-text">
-                  Lowest Caloric Consumption In a Day: <span>0</span>
+                  Most Calories Consumed In a Day:
+                  <span id="mostCaloriesConsumedInADay"></span>
+                </p>
+                <p class="card-text">
+                  Least Calories Consumed In a Day:
+                  <span id="leastCaloriesConsumedInADay"></span>
                 </p>
                 <p class="card-text">
                   Most Caloric Dense Item:
-                  <span id="totalCalories">Peanut Butter Jelly</span>
+                  <span id="highestCalorieItem"></span>
                 </p>
                 <p class="card-text">
-                  Least Caloric Dense Item: <span>Bread</span>
+                  Least Caloric Dense Item:
+                  <span id="lowestCalorieItem"></span>
                 </p>
                 <p class="card-text">
-                  Number of Fasting Days: <span>0</span>
+                  Days With No Food:
+                  <span id="daysWithNoFood"></span>
                 </p>
-                <p class="card-text">Highest item count: <span>0</span></p>
-                <p class="card-text">Lowest item count: <span>0</span></p>
+                <p class="card-text">
+                  Highest food item count in a day:
+                  <span id="highestFoodItemCountInADay"></span>
+                </p>
+                <p class="card-text">
+                  Lowest food item count in a day:
+                  <span id="lowestFoodItemCountInADay"></span>
+                </p>
               </div>
             </div>
           </div>
         </div>
+        <!------ End of The Report ------->
       </div>
     </div>
   </div>
@@ -294,6 +383,8 @@
   integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
   crossorigin="anonymous"
 ></script>
+<script src="idb.js"></script>
 <script src="script.js"></script>
+<script src="test.js"></script>
 </body>
 </html>
