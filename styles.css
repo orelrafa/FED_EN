@@ -29,10 +29,10 @@ body {
 .alert{
   position: absolute;
   bottom:100%;
-  left: 50%; /* Center the alert horizontally */
-  transform: translateX(-50%); /* Adjust for centering */
-  z-index:1 !important; /* Ensure the alert is above the calendar */
-  width: 100%; /* Make sure it spans the full width of its container */
+  left: 50%; 
+  transform: translateX(-50%); 
+  z-index:1 !important; 
+  width: 100%; 
   background-color: #cce5ff;
 
 }
