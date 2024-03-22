@@ -2,7 +2,7 @@
 Developers:
 First name: Orel, Nikita
 Last name: Rafailov, Borochov
-ID:   318972957, 302238399 
+ID:   *********, ********* 
 */
 "use strict";
 // Namespace for IndexedDB operations
