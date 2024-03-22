@@ -1,3 +1,9 @@
+<!-- 
+  Developers: 
+  First name: Orel, Nikita 
+  Last name: Rafailov, Borochov 
+  ID: 318972957, 302238399 
+-->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,6 +28,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-6 mb-5">
+            <!------ The Calendar ------->
             <div class="calendar-container">
               <div class="calendar-header">
                 <button id="prevBtn" onclick="calendar.prevMonth()">
@@ -38,6 +45,8 @@
                 </table>
               </div>
             </div>
+            <!------ End of The Calendar ------->
+            <!------ The Food Manager ------->
             <div
               class="food-edit-menu-container modal-dialog d-none"
               role="document"
@@ -49,7 +58,7 @@
                     class="btn-close float-end food-close"
                     data-bs-dismiss="modal"
                     aria-label="Close"
-                    onclick="toggleFoodCalendar()"
+                    onclick="foodManager.toggleFoodCalendar()"
                   ></button>
                   <h2 class="fw-bold text-center">Calorie Tracker</h2>
                   <h3 class="text-center mb-4 text-secondary selected-date">
@@ -140,7 +149,7 @@
                             class="close"
                             data-bs-dismiss="modal"
                             aria-label="Close"
-                            onclick="clearSaveFoodFields()"
+                            onclick="foodManager.clearSaveFoodFields()"
                           >
                             <span class="close_icon" aria-hidden="true"
                               >&times;</span
@@ -185,14 +194,14 @@
                             type="button"
                             class="btn btn-secondary"
                             data-bs-dismiss="modal"
-                            onclick="clearSaveFoodFields()"
+                            onclick="foodManager.clearSaveFoodFields()"
                           >
                             Close
                           </button>
                           <button
                             type="button"
                             class="btn btn-primary"
-                            onclick="saveFood()"
+                            onclick="foodManager.saveFood()"
                           >
                             Save
                           </button>
@@ -297,8 +306,11 @@
                 </div>
               </div>
             </div>
+            <!------ End of The Food Manager ------->
           </div>
+
           <div class="col-md-6">
+            <!------ The Report ------->
             <div class="container">
               <div class="row justify-content-center">
                 <div class="card rounded-4 shadow report-body">
@@ -334,8 +346,8 @@
                       <span id="lowestCalorieItem"></span>
                     </p>
                     <p class="card-text">
-                      Number of Fasting Days:
-                      <span id="numberOfFastingDays"></span>
+                      Days With No Food:
+                      <span id="daysWithNoFood"></span>
                     </p>
                     <p class="card-text">
                       Highest food item count in a day:
@@ -349,6 +361,7 @@
                 </div>
               </div>
             </div>
+            <!------ End of The Report ------->
           </div>
         </div>
       </div>
