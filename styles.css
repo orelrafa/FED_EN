@@ -1,11 +1,37 @@
-/* 
+/*
 Developers:
 First name: Orel, Nikita
 Last name: Rafailov, Borochov
-ID:   *********, ********* 
+ID:   *********, *********
 */
+
 body {
   height: 100vh;
+}
+
+#modalTour.modal {
+  padding-top: 8rem !important;
+  padding-bottom: 1rem !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.container-fluid .calendar-container {
+  overflow: visible;
+}
+
+.calendar-container {
+  position: relative;
+}
+
+.alert {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1 !important;
+  width: 100%;
+  background-color: #cce5ff;
 }
 
 .list-group-item {
@@ -15,7 +41,7 @@ body {
 }
 
 .badge {
-  background-color: blue;
+  background-color: rgba(189, 83, 83, 0.87);
 }
 
 .modal-header .close {
@@ -60,7 +86,7 @@ button.close {
   align-items: center;
   justify-content: space-between;
   padding: 0.625rem;
-  background-color: #007bff;
+  background-color: rgba(189, 83, 83, 0.87);
   color: #fff;
 }
 

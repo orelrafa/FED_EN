@@ -1,8 +1,8 @@
-/* 
+/*
 Developers:
 First name: Orel, Nikita
 Last name: Rafailov, Borochov
-ID:   *********, ********* 
+ID:   *********, *********
 */
 "use strict";
 
@@ -26,7 +26,7 @@ foodManager.saveFood = async function () {
 
   // try pushing the new item to the database and save the indexedDB id to const id
   try {
-    const db = await idb.openCalorisDB("caloriesdb", 1);
+    const db = await idb.openCaloriesDB("caloriesdb", 1);
     const id = await db.addCalories({
       calorie: parseInt(enteredCalories),
       category: selectedCategory,
@@ -133,6 +133,10 @@ foodManager.validateFields = function (
     errCal.textContent = "Enter calories!";
     return false;
   }
+  if (caloriesValue < 0) {
+    errCal.textContent = "Calories can't be negative!";
+    return false;
+  }
 
   // If the check passed return true
   return true;
@@ -194,7 +198,7 @@ foodManager.editFood = function (clickedButton) {
     // Update the Calorie in the db:
     const id = clickedButton.getAttribute("data-id");
     try {
-      const db = await idb.openCalorisDB("caloriesdb", 1);
+      const db = await idb.openCaloriesDB("caloriesdb", 1);
       await db.updateCalories(id);
     } catch (error) {
       console.error("Failed to update food item: ", error);
@@ -216,7 +220,7 @@ foodManager.editFood = function (clickedButton) {
     //Delete from indexedDB
     const id = clickedButton.getAttribute("data-id");
     try {
-      const db = await idb.openCalorisDB("caloriesdb", 1);
+      const db = await idb.openCaloriesDB("caloriesdb", 1);
       await db.deleteCalories(id);
     } catch (error) {
       console.error("Failed to delete food item: ", error);
@@ -261,7 +265,7 @@ foodManager.closeFoodModal = function () {
 // Function that renders all of the food items of a day
 foodManager.renderFoodList = async function (formattedDate) {
   // Fetch array of food items for the selected day from the caloriesdb
-  const db = await idb.openCalorisDB("caloriesdb", 1);
+  const db = await idb.openCaloriesDB("caloriesdb", 1);
   const foodArray = await db.getCaloriesByDate(formattedDate, formattedDate);
   // Render each food item in it's respective category
   foodArray.forEach((food) => {
@@ -518,7 +522,7 @@ report.updateReport = async function () {
 // Asynchronous function that counts the total calories in a month
 report.totalCalories = async function () {
   // Open the IndexedDB database named "caloriesdb" with version 1
-  const db = await idb.openCalorisDB("caloriesdb", 1);
+  const db = await idb.openCaloriesDB("caloriesdb", 1);
 
   // Get the date key for the first day of the current month of the current year.
   // -We use harcoded 1 because every day of the month starts with 1,
@@ -607,7 +611,7 @@ report.mostCaloriesConsumedInADay = async function () {
   let mostCaloriesConsumedInADay = 0;
 
   // Open the IndexedDB database
-  const db = await idb.openCalorisDB("caloriesdb", 1);
+  const db = await idb.openCaloriesDB("caloriesdb", 1);
 
   // Calculate the first and last day keys of the current month to pass as a range
   // for the getCaloriesByDate
@@ -673,7 +677,7 @@ report.leastCaloriesConsumedInADay = async function () {
   let leastCaloriesConsumedInADay = Infinity; // Start with a high initial value
 
   // Open the IndexedDB database
-  const db = await idb.openCalorisDB("caloriesdb", 1);
+  const db = await idb.openCaloriesDB("caloriesdb", 1);
 
   // Calculate the first and last dates of the current month
   const firstDate = foodManager.dateConvert([
@@ -737,7 +741,7 @@ report.leastCaloriesConsumedInADay = async function () {
 // Asynchronous function that finds the highest calorie item in a given month
 report.highestCalorieItem = async function () {
   // Open the IndexedDB database
-  const db = await idb.openCalorisDB("caloriesdb", 1);
+  const db = await idb.openCaloriesDB("caloriesdb", 1);
   const firstDay = foodManager.dateConvert([
     1, //passing hardcoded 1 because every month starts with 1
     calendar.currentMonth + 1, //currentMonth+1 because Date class counts from 0
@@ -772,7 +776,7 @@ report.highestCalorieItem = async function () {
 // Asynchronous function that finds the highest calorie item in a given month
 report.lowestCalorieItem = async function () {
   // Open the IndexedDB database
-  const db = await idb.openCalorisDB("caloriesdb", 1);
+  const db = await idb.openCaloriesDB("caloriesdb", 1);
   const firstDay = foodManager.dateConvert([
     1,
     calendar.currentMonth + 1,
@@ -820,7 +824,7 @@ report.numberOfItemsPerDay = async function () {
     0
   ).getDate();
   // Open the IndexedDB database
-  const db = await idb.openCalorisDB("caloriesdb", 1);
+  const db = await idb.openCaloriesDB("caloriesdb", 1);
   // get the keys for the first day of the month and the last day of the month for us to then pass as a range
   // to getCaloriesByDate
   const firstDate = foodManager.dateConvert([

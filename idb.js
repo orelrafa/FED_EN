@@ -1,15 +1,15 @@
-/* 
+/*
 Developers:
 First name: Orel, Nikita
 Last name: Rafailov, Borochov
-ID:   *********, ********* 
+ID:   *********, *********
 */
 "use strict";
 // Namespace for IndexedDB operations
 const idb = {};
 
 // Method to open IndexedDB
-idb.openCalorisDB = async (dbName, version) => {
+idb.openCaloriesDB = async (dbName, version) => {
   return new Promise((resolve, reject) => {
     // Open the IndexedDB database
     const request = indexedDB.open(dbName, version);
@@ -48,7 +48,10 @@ idb.openCalorisDB = async (dbName, version) => {
           if (
             calorieData.calorie < 0 ||
             !calorieData.description ||
-            !calorieData.category
+            !calorieData.category ||
+            !["breakfast", "lunch", "dinner", "other"].includes(
+              calorieData.category.toString().toLowerCase()
+            )
           ) {
             console.error(
               "One or more required fields are missing or invalid!"
@@ -184,7 +187,6 @@ idb.openCalorisDB = async (dbName, version) => {
             // Put the updated calories back into the object store
             const putRequest = store.put(updatedCalories);
             putRequest.onsuccess = function () {
-              console.log("Calorie updated successfully");
               resolve(true);
             };
             // Handle errors during the update operation
