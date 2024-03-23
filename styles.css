@@ -1,5 +1,37 @@
+/*
+Developers:
+First name: Orel, Nikita
+Last name: Rafailov, Borochov
+ID:   *********, *********
+*/
+
 body {
   height: 100vh;
+}
+
+#modalTour.modal {
+  padding-top: 8rem !important;
+  padding-bottom: 1rem !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.container-fluid .calendar-container {
+  overflow: visible;
+}
+
+.calendar-container {
+  position: relative;
+}
+
+.alert {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1 !important;
+  width: 100%;
+  background-color: #cce5ff;
 }
 
 .list-group-item {
@@ -9,7 +41,7 @@ body {
 }
 
 .badge {
-  background-color: blue;
+  background-color: rgba(189, 83, 83, 0.87);
 }
 
 .modal-header .close {
@@ -28,7 +60,7 @@ button.close {
   font-weight: 700;
   line-height: 1;
   color: #000;
-  text-shadow: 0 1px 0 #fff;
+  text-shadow: 0 0.0625rem 0 #fff;
   opacity: 0.5;
 }
 
@@ -42,8 +74,8 @@ button.close {
 
 .calendar-container {
   background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
   width: 23.125rem;
   overflow: hidden;
   margin: auto;
@@ -53,8 +85,8 @@ button.close {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px;
-  background-color: #007bff;
+  padding: 0.625rem;
+  background-color: rgba(189, 83, 83, 0.87);
   color: #fff;
 }
 
@@ -62,7 +94,7 @@ button {
   background: none;
   border: none;
   color: #fff;
-  font-size: 18px;
+  font-size: 1.125rem;
   cursor: pointer;
 }
 
@@ -73,8 +105,8 @@ button {
 .calendar th,
 .calendar td {
   text-align: left;
-  padding: 10px;
-  border: 1px solid #ddd;
+  padding: 0.625rem;
+  border: 0.0625rem solid #ddd;
 }
 
 .calendar th {
@@ -90,36 +122,37 @@ button {
   background-color: #f5f5f5;
 }
 
-ul {
-  list-style-type: none;
-}
-
 .report-container {
   background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 20px;
+  box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
 }
-
+.report-body {
+  max-width: fit-content;
+  max-height: fit-content;
+}
 .calorie-report h2 {
   text-align: Center;
 }
 
 p {
-  margin: 10px 0;
-  margin-left: 30px;
+  margin: 0.625rem 0;
+  margin-left: 1.875rem;
 }
 
 span {
   font-weight: bold;
   color: #333;
 }
-
+.current-day {
+  background-color: #cce5ff;
+}
 .food-edit-menu-container {
   margin: auto;
 }
 .food_list {
-  max-height: 400px;
+  max-height: 25rem;
   overflow-y: auto;
-  padding-right: 20px;
+  padding-right: 1.25rem;
 }
