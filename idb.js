@@ -2,13 +2,13 @@
 Developers:
 First name: Orel, Nikita
 Last name: Rafailov, Borochov
-ID:   *********, *********
+ID:   318972957, 302238399
 */
 "use strict";
 // Namespace for IndexedDB operations
 const idb = {};
 
-// Method to open IndexedDB
+// Function to open IndexedDB
 idb.openCaloriesDB = async (dbName, version) => {
   return new Promise((resolve, reject) => {
     // Open the IndexedDB database
@@ -41,7 +41,7 @@ idb.openCaloriesDB = async (dbName, version) => {
       // IMPORTANT: Below we are exposing the functions to the db object
       //            Hence why all of the functions are nested inside here
 
-      // Method to add new calorie data to the database
+      // Function to add new calorie data to the database
       db.addCalories = async (calorieData) => {
         return new Promise((resolve, reject) => {
           // Check if all required fields are present and valid
@@ -98,7 +98,7 @@ idb.openCaloriesDB = async (dbName, version) => {
         });
       };
 
-      // Method to retrieve calorie data within a specified date range
+      // Function to retrieve calorie data within a specified date range
       db.getCaloriesByDate = async (startRange, endRange) => {
         return new Promise((resolve, reject) => {
           // Start a read-only transaction to fetch data
@@ -129,7 +129,7 @@ idb.openCaloriesDB = async (dbName, version) => {
         });
       };
 
-      // Method to delete calorie data by ID
+      // Function to delete calorie data by ID
       db.deleteCalories = async (id) => {
         //Delete food item from IndexedDB
         return new Promise((resolve, reject) => {
@@ -171,7 +171,7 @@ idb.openCaloriesDB = async (dbName, version) => {
         return existingCalories;
       };
 
-      // Method to update calorie data by ID
+      // Function to update calorie data by ID
       db.updateCalories = async (id) => {
         return new Promise((resolve, reject) => {
           // Start a read-write transaction for updating data
