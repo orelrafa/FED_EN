@@ -2,7 +2,6 @@
   Developers:
   First name: Orel, Nikita
   Last name: Rafailov, Borochov
-  ID: 318972957, 302238399
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -229,18 +228,21 @@
            </div>
             <div class="row justify-content-center">
               <div class="card rounded-4 shadow report-body">
-                <div class="card-body">
+                <div class="card-body text-center">
                   <h2 class="card-title fw-bold mt-4 mb-3 text-center">
                     Monthly Report
                   </h2>
-                  <table class="table text-center">
+                  <span class="card-text">
+                    Total Calories: <span id="totalCalories"></span>
+                  </span>
+                  <table class="table text-center mt-3" id="reportTable">
                     <thead>
                       <tr>
                         <th scope="col">#</th>
                         <th scope="col">Description</th>
                         <th scope="col">Calories</th>
                         <th scope="col">Category</th>
-                        <th scope="col">Day of Month Added</th>
+                        <th scope="col">Day of Month</th>
                       </tr>
                     </thead>
                     <tbody id="tableBody">

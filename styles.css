@@ -2,7 +2,6 @@
 Developers:
 First name: Orel, Nikita
 Last name: Rafailov, Borochov
-ID:   318972957, 302238399
 */
 
 body {
@@ -178,4 +177,8 @@ span {
 #inputYear{
   width: 4rem;
   margin: 5px;
+}
+
+.table>:not(caption)>*>*{
+  padding: 0.5rem 0.3rem;
 }

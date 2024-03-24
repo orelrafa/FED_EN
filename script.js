@@ -2,7 +2,6 @@
 Developers:
 First name: Orel, Nikita
 Last name: Rafailov, Borochov
-ID:   318972957, 302238399
 */
 "use strict";
 
@@ -592,10 +591,13 @@ report.monthlyReport = async function () {
   const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
 
   let count=1;
+  let totalCalories = 0;
   document.getElementById("tableBody").innerHTML = ``;
 
   //Display each food item that was added in a specific month
   foodThisMonth.forEach((food)=>{
+    totalCalories += Number(food.calorie);
+  
     document.getElementById("tableBody").innerHTML += `
     <tr>
     <th scope="row">${count++}</th>
@@ -606,6 +608,9 @@ report.monthlyReport = async function () {
     </tr>
     `;
   })
+
+  //Display total calories for the month
+  document.getElementById("totalCalories").textContent = totalCalories;
 };
 
 
