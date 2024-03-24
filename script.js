@@ -2,7 +2,7 @@
 Developers:
 First name: Orel, Nikita
 Last name: Rafailov, Borochov
-ID:   *********, *********
+ID:   318972957, 302238399
 */
 "use strict";
 
@@ -389,7 +389,7 @@ calendar.renderCalendar = function () {
 `;
 
   // By passing 0 as the day in the third parameter,
-  // it sets the date to the last day of the previous month
+  // it sets the date to the last day of the month
   const lastDay = new Date(
     calendar.currentYear,
     calendar.currentMonth + 1,
@@ -773,26 +773,29 @@ report.highestCalorieItem = async function () {
   // return the highest calorie item
   return highestCalorieItem;
 };
-// Asynchronous function that finds the highest calorie item in a given month
+// Asynchronous function that finds the lowest calorie item in a given month
 report.lowestCalorieItem = async function () {
   // Open the IndexedDB database
   const db = await idb.openCaloriesDB("caloriesdb", 1);
   const firstDay = foodManager.dateConvert([
-    1,
-    calendar.currentMonth + 1,
+    1, //passing hardcoded 1 because every month starts with 1
+    calendar.currentMonth + 1, //currentMonth+1 because Date class counts from 0
     calendar.currentYear,
   ]);
   const lastDay = foodManager.dateConvert([
-    31,
+    31, //passing hardcoded 31 because at most a month has 31 days
     calendar.currentMonth + 1,
     calendar.currentYear,
   ]);
+  // Retrieve food data for the current month from the database
   const foodThisMonth = await db.getCaloriesByDate(`${firstDay}`, `${lastDay}`);
   const lowestCalorieItem = { calorie: 0, description: "" };
+  // Check if there is any food data for the current month
   if (foodThisMonth[0]) {
     //initialize the lowestCalorieItem to be the first food item in the array of foods
     lowestCalorieItem.calorie = Number(foodThisMonth[0].calorie);
     lowestCalorieItem.description = foodThisMonth[0].description;
+    //Find the lowest calorie item in this month
     foodThisMonth.forEach((food) => {
       if (lowestCalorieItem.calorie > Number(food.calorie)) {
         lowestCalorieItem.calorie = Number(food.calorie);
@@ -800,9 +803,11 @@ report.lowestCalorieItem = async function () {
       }
     });
   } else lowestCalorieItem.description = "no food";
+  // update the DOM element
   document.getElementById("lowestCalorieItem").textContent =
     lowestCalorieItem.description;
-  return lowestCalorieItem.description;
+  // return the highest calorie item
+  return lowestCalorieItem;
 };
 
 // Asynchronous function that returns an array, each cell  in the array holds a number,
