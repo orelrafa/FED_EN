@@ -2,6 +2,7 @@
 Developers:
 First name: Orel, Nikita
 Last name: Rafailov, Borochov
+ID:   318972957, 302238399
 */
 
 body {
@@ -154,4 +155,27 @@ span {
   max-height: 25rem;
   overflow-y: auto;
   padding-right: 1.25rem;
+}
+
+.redBorder{
+  border:2px solid red;
+}
+
+.formContainer{
+  margin: 5px;
+}
+
+.formContainer .btn{
+  margin:5px;
+
+}
+
+#inputMonth{
+  width: 3rem;
+  margin: 5px;
+}
+
+#inputYear{
+  width: 4rem;
+  margin: 5px;
 }
