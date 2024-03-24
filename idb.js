@@ -2,7 +2,6 @@
 Developers:
 First name: Orel, Nikita
 Last name: Rafailov, Borochov
-ID:   318972957, 302238399
 */
 "use strict";
 // Namespace for IndexedDB operations
@@ -63,7 +62,7 @@ idb.openCaloriesDB = async (dbName, version) => {
 
           // If an item is added not from the UI and has no date, set the default date to today's date
           if (!calorieData.hasOwnProperty("selectedDate")) {
-            const date = calendar.currentDate;
+            const date = new Date();
             let month = date.getMonth() + 1;
             let day = date.getDate();
             month = month < 10 ? "0" + month : month;
