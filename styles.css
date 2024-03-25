@@ -10,7 +10,7 @@ body {
 
 #modalTour.modal {
   padding-top: 8rem !important;
-  padding-bottom: 1rem !important;
+  padding-bottom: 5rem !important;
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -181,4 +181,22 @@ span {
 
 .table>:not(caption)>*>*{
   padding: 0.5rem 0.3rem;
+}
+
+@media (max-width: 576px) {
+  #reportTable thead th {
+    font-size: 0.8rem; 
+  }
+}
+
+@media (max-width: 360px) {
+  #reportTable thead th {
+    font-size: 0.7rem; 
+  }
+}
+
+@media (max-width: 360px) {
+  #reportTable tbody td {
+    font-size: 0.9rem; 
+  }
 }
