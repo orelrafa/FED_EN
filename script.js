@@ -532,7 +532,7 @@ calendar.prevMonth = function () {
     calendar.currentMonth = 11;
     calendar.currentYear--;
   }
-  console.log(this.currentMonth);
+
   // render the calendar for the corresponding month
   calendar.renderCalendar();
   // update the report to display for the correct month
