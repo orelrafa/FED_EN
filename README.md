@@ -8,7 +8,7 @@ This project serves as the final assignment for the Front-End Development course
 
 - Data on the client side is stored in IndexedDB.
 - A separate library, `idb.js`, is developed for utilizing IndexedDB functionalities.
-- The library includes essential functions (see code at the end).
+- The library includes essential functions.
 - Asynchronous operations are emphasized, requiring proper Promise object instantiation and return.
 
 ## Application Features
@@ -26,7 +26,7 @@ This project serves as the final assignment for the Front-End Development course
 
 ## User Interface
 
-- Developed using either Bootstrap or ReactJS.
+- Developed using Bootstrap.
 - Server-side functionalities are excluded from the project scope.
 
 ---
@@ -48,5 +48,3 @@ async function fetchDataFromDB() {
 ```
 
 ---
-
-**Note:** Ensure that the project adheres to the specified requirements and maintains a clear separation of concerns between the client application and the IndexedDB library.
